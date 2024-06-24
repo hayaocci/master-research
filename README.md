@@ -9,4 +9,8 @@ https://design.kyusan-u.ac.jp/OpenSquareJP/?Blender/Rendering_Lights#:~:text=%E2
 
 ###### 2024/06/21  
 PAFの鏡面反射の再現  
--> Shade Smoothを用いて行うも、画像のように縞模様が入ってしまう
+-> Shade Smoothを用いて行うも、画像のように縞模様が入ってしまう  
+
+###### 2024/06/24
+Blenderのレンダリング中のバグの解決に役に立ちそうなIssueなど  
+https://projects.blender.org/blender/blender/issues/117229
