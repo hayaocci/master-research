@@ -87,10 +87,10 @@ def init_camera_small():
     bpy.context.scene.render.engine = 'CYCLES'
     bpy.context.scene.cycles.samples = 64
 
-def init_gpu():
-    bpy.context.preferences.system.memory_cache_limit = 12288  # 2GBのメモリキャッシュ制限
-    bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'
-    bpy.context.scene.cycles.device = 'GPU'
+# def init_gpu():
+#     bpy.context.preferences.system.memory_cache_limit = 2  # 2GBのメモリキャッシュ制限
+#     bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'
+#     bpy.context.scene.cycles.device = 'GPU'
 
 def purge_orphan_data():
     # Purge orphan data to free memory
@@ -178,7 +178,7 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
             bpy.data.objects["debris"].hide_render = False
             bpy.data.objects["decoydebris"].hide_render = True
 
-            bpy.context.scene.render.filepath = input_dir + "/" + str(i+2046) + ".png"
+            bpy.context.scene.render.filepath = input_dir + "/" + str(i+9542) + ".png"
             bpy.context.scene.render.image_settings.file_format = 'PNG' 
             bpy.ops.render.render(write_still=True) 
 
@@ -191,7 +191,7 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
             bpy.data.objects["debris"].hide_render = True
             bpy.data.objects["decoydebris"].hide_render = False
 
-            bpy.context.scene.render.filepath = output_dir + "/" + str(i+2046) + ".png"
+            bpy.context.scene.render.filepath = output_dir + "/" + str(i+9542) + ".png"
             bpy.context.scene.render.image_settings.file_format = 'PNG' 
             bpy.ops.render.render(write_still=True) 
             
@@ -203,21 +203,21 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
 def render_main():
     make_file()
 
-    init_gpu()
+    # init_gpu()
 
     for batch_start in range(0, TRAIN_PIC, BATCH_SIZE):
         batch_end = min(batch_start + BATCH_SIZE, TRAIN_PIC)
         render_batch(batch_start, batch_end, os.path.join(TRAIN_INPUT_DIR, str(int(batch_start/BATCH_SIZE))), os.path.join(TRAIN_OUTPUT_DIR, str(int(batch_start/BATCH_SIZE))))
         bpy.ops.wm.read_factory_settings(use_empty=True)
         bpy.ops.wm.open_mainfile(filepath=BLENDER_FILEPATH)
-        init_gpu()
+        # init_gpu()
 
     for batch_start in range(0, VALID_PIC, BATCH_SIZE):
         batch_end = min(batch_start + BATCH_SIZE, VALID_PIC)
         render_batch(batch_start, batch_end, os.path.join(VALID_INPUT_DIR, str(int(batch_start/BATCH_SIZE))), os.path.join(VALID_OUTPUT_DIR, str(int(batch_start/BATCH_SIZE))))
         bpy.ops.wm.read_factory_settings(use_empty=True)
         bpy.ops.wm.open_mainfile(filepath=BLENDER_FILEPATH)
-        init_gpu()
+        # init_gpu()
 
 
 if __name__ == "__main__":
