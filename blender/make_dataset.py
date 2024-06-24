@@ -92,6 +92,11 @@ def init_gpu():
     bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'
     bpy.context.scene.cycles.device = 'GPU'
 
+def purge_orphan_data():
+    # Purge orphan data to free memory
+    for _ in range(3):  # Repeat to ensure all orphans are purged
+        bpy.ops.outliner.orphans_purge(do_local_ids=True, do_linked_ids=True, do_recursive=True)
+
 def render_batch(start_idx, end_idx, input_dir, output_dir):
     make_file()
 
@@ -173,7 +178,7 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
             bpy.data.objects["debris"].hide_render = False
             bpy.data.objects["decoydebris"].hide_render = True
 
-            bpy.context.scene.render.filepath = input_dir + "/" + str(i) + ".png"
+            bpy.context.scene.render.filepath = input_dir + "/" + str(i+1364) + ".png"
             bpy.context.scene.render.image_settings.file_format = 'PNG' 
             bpy.ops.render.render(write_still=True) 
 
@@ -186,10 +191,12 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
             bpy.data.objects["debris"].hide_render = True
             bpy.data.objects["decoydebris"].hide_render = False
 
-            bpy.context.scene.render.filepath = output_dir + "/" + str(i) + ".png"
+            bpy.context.scene.render.filepath = output_dir + "/" + str(i+1364) + ".png"
             bpy.context.scene.render.image_settings.file_format = 'PNG' 
             bpy.ops.render.render(write_still=True) 
             
+            purge_orphan_data()
+
         except Exception as e:
             time.sleep(60)
 
