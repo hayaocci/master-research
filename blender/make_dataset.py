@@ -178,7 +178,7 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
             bpy.data.objects["debris"].hide_render = False
             bpy.data.objects["decoydebris"].hide_render = True
 
-            bpy.context.scene.render.filepath = input_dir + "/" + str(i+1364) + ".png"
+            bpy.context.scene.render.filepath = input_dir + "/" + str(i+2046) + ".png"
             bpy.context.scene.render.image_settings.file_format = 'PNG' 
             bpy.ops.render.render(write_still=True) 
 
@@ -191,7 +191,7 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
             bpy.data.objects["debris"].hide_render = True
             bpy.data.objects["decoydebris"].hide_render = False
 
-            bpy.context.scene.render.filepath = output_dir + "/" + str(i+1364) + ".png"
+            bpy.context.scene.render.filepath = output_dir + "/" + str(i+2046) + ".png"
             bpy.context.scene.render.image_settings.file_format = 'PNG' 
             bpy.ops.render.render(write_still=True) 
             
