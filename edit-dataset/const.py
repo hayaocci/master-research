@@ -1,0 +1,2 @@
+IMG_DIR = "C:/workspace/MasterResearch/blender_dataset_main/20240624_dataset/train/input"
+EDIT_IMG_DIR = "C:/workspace/MasterResearch/blender_dataset_main/20240624_dataset/train/contrast_changed_input"
