@@ -1,15 +1,15 @@
-"""
-Blenderでデータセットを作成するスクリプト
-地球とデブリのIoUで区別する
-"""
+# """
+# Blenderでデータセットを作成するスクリプト
+# 地球とデブリのIoUで区別する
+# """
 
 import os
 import numpy as np
-import cv2
+# import cv2
 import random
 import datetime as dt
 import bpy
-import bpycv
+# import bpycv
 import csv
 import time
 
@@ -17,8 +17,11 @@ import time
 IMG_SIZE = (96, 96)
 NUM_PIC = 100 # 100~ && x100
 SPLIT_RATIO = 0.8
-TRAIN_PIC = int(NUM_PIC * SPLIT_RATIO)
-VALID_PIC = 11*200 #NUM_PIC - TRAIN_PIC
+# TRAIN_PIC = int(NUM_PIC * SPLIT_RATIO)
+TRAIN_PIC = 8000
+# VALID_PIC = 11*200 #NUM_PIC - TRAIN_PIC
+VALID_PIC = 2000
+BATCH_SIZE = 500
 
 # colors
 WHITE = [1, 1, 1, 1]
@@ -30,7 +33,7 @@ dir_name = time_name + "_" + str(IMG_SIZE[0]) + "x" + str(IMG_SIZE[1])
 
 # path
 # SAVE_DIR = 'C:/workspace/senior_thesis/nnc001/dataset/'
-SAVE_DIR = 'C:/workspace/dataset_all/'
+SAVE_DIR = 'C:/workspace/MasterResearch/blender_dataset'
 DATASET_DIR = os.path.join(SAVE_DIR, dir_name)
 TRAIN_DIR = os.path.join(DATASET_DIR, "train")
 VALID_DIR = os.path.join(DATASET_DIR, "valid")
@@ -41,6 +44,7 @@ VALID_OUTPUT_DIR = os.path.join(VALID_DIR, "output")
 EX_TRAIN_INPUT_DIR = os.path.join(TRAIN_DIR, "ex_input")
 EX_VALID_INPUT_DIR = os.path.join(VALID_DIR, "ex_input")
 
+BLENDER_FILEPATH = 'C:/workspace/MasterResearch/blender/new_earth_ver1.03_scripting_withCamera/new_earth/earth_debris_scripting_withCamera.blend'
 def make_file():
     # Ensure dataset directory exists
     os.makedirs(DATASET_DIR, exist_ok=True)
@@ -49,469 +53,177 @@ def make_file():
     os.makedirs(TRAIN_DIR, exist_ok=True)
     os.makedirs(TRAIN_INPUT_DIR, exist_ok=True)
     os.makedirs(TRAIN_OUTPUT_DIR, exist_ok=True)
-    os.makedirs(EX_TRAIN_INPUT_DIR, exist_ok=True)
+    # os.makedirs(EX_TRAIN_INPUT_DIR, exist_ok=True)
 
     # valid directory
     os.makedirs(VALID_DIR, exist_ok=True)
     os.makedirs(VALID_INPUT_DIR, exist_ok=True)
     os.makedirs(VALID_OUTPUT_DIR, exist_ok=True)
-    os.makedirs(EX_VALID_INPUT_DIR, exist_ok=True)
+    # os.makedirs(EX_VALID_INPUT_DIR, exist_ok=True)
 
-    for i in range(12):
-        # os.makedirs(os.path.join(TRAIN_INPUT_DIR, str(i)), exist_ok=True)
-        # os.makedirs(os.path.join(TRAIN_OUTPUT_DIR, str(i)), exist_ok=True)
+    for i in range(int(TRAIN_PIC / BATCH_SIZE)):
+        os.makedirs(os.path.join(TRAIN_INPUT_DIR, str(int(i))), exist_ok=True)
+        os.makedirs(os.path.join(TRAIN_OUTPUT_DIR, str(int(i))), exist_ok=True)
         # os.makedirs(os.path.join(EX_TRAIN_INPUT_DIR, str(i)), exist_ok=True)
-        os.makedirs(os.path.join(VALID_INPUT_DIR, str(i)), exist_ok=True)
-        os.makedirs(os.path.join(VALID_OUTPUT_DIR, str(i)), exist_ok=True)
-        os.makedirs(os.path.join(EX_VALID_INPUT_DIR, str(i)), exist_ok=True)
+        os.makedirs(os.path.join(VALID_INPUT_DIR, str(int(i))), exist_ok=True)
+        os.makedirs(os.path.join(VALID_OUTPUT_DIR, str(int(i))), exist_ok=True)
+        # os.makedirs(os.path.join(EX_VALID_INPUT_DIR, str(i)), exist_ok=True)
 
     print("Directory created.")
 
-def make_csvfile(dir_path, file_num):
-    if "train" in dir_path:
-        csv_path = os.path.join(dir_path, 'train.csv')
-    elif "valid" in dir_path:
-        csv_path = os.path.join(dir_path, 'valid.csv')
-    else:
-        print("ディレクトリ名が不正です。")
-        exit()
-
-    data = []
-    data.append(['x:in', 'y:out'])
-
-    for i in range(file_num):
-        data.append([f'./input/{i}.jpg', f'./output/{i}.jpg'])
-
-    with open(csv_path, 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerows(data)
-
-def make_csvfile2(dir_path, file_num):
-    if "train" in dir_path:
-        csv_path = os.path.join(dir_path, 'ex_train.csv')
-    elif "valid" in dir_path:
-        csv_path = os.path.join(dir_path, 'ex_valid.csv')
-    else:
-        print("ディレクトリ名が不正です。")
-        exit()
-
-    data = []
-    data.append(['x:in', 'y:out'])
-
-    for i in range(file_num):
-        data.append([f'./ex_input/{i}.jpg', f'./output/{i}.jpg'])
-
-    with open(csv_path, 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerows(data)
-
-def set_color(hex_code):
-    """
-    16進数の色を引数にとる
-    Parameters
-    ----------
-    hex_code : str
-        16進数の色コード
-    """
-    # 16進数の色をRGBに変換
-    r = hex_code[0]
-    g = hex_code[1]
-    b = hex_code[2]
-    a = hex_code[3]
-
-    # color
-    bpy.data.materials["Material.001"].node_tree.nodes["Principled BSDF"].inputs[0].default_value = (r, g, b, a)
-
 def init_camera():
     # setting resolution
+    bpy.context.scene.cycles.use_denoising = True
     bpy.context.scene.render.resolution_x = IMG_SIZE[0]
     bpy.context.scene.render.resolution_y = IMG_SIZE[1]
+    bpy.context.scene.render.engine = 'CYCLES'
+    bpy.context.scene.cycles.samples = 64
 
-def set_camera():
-    # Randomize object settings
-    x = random.uniform(16.0396, 18.3958)
-    y = random.uniform(0, 6.26573)
-    z = random.uniform(3.82227, 6.10865)
+def init_camera_small():
+    # setting resolution
+    bpy.context.scene.cycles.use_denoising = False
+    bpy.context.scene.render.resolution_x = 12
+    bpy.context.scene.render.resolution_y = 12
+    bpy.context.scene.render.engine = 'CYCLES'
+    bpy.context.scene.cycles.samples = 64
 
+# def init_gpu():
+#     bpy.context.preferences.system.memory_cache_limit = 2  # 2GBのメモリキャッシュ制限
+#     bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'
+#     bpy.context.scene.cycles.device = 'GPU'
 
-    bpy.data.objects['Empty'].rotation_euler[2] = z - random.uniform(0, 1) #random.uniform(0, 6.26573)
-    bpy.data.objects['Light'].rotation_euler[2] = z - random.uniform(0, 1) #random.uniform(0, 6.26573)
-    bpy.context.object.data.energy = random.uniform(10, 40)
+def purge_orphan_data():
+    # Purge orphan data to free memory
+    for _ in range(3):  # Repeat to ensure all orphans are purged
+        bpy.ops.outliner.orphans_purge(do_local_ids=True, do_linked_ids=True, do_recursive=True)
 
-    bpy.data.objects['Camera'].rotation_euler[0] = random.uniform(16.0396, 18.3958)
-    bpy.data.objects['Camera'].rotation_euler[1] = random.uniform(0, 6.26573)
-    bpy.data.objects['Camera'].rotation_euler[2] = z #random.uniform(3.82227, 6.10865)
-
-    bpy.data.objects['S-IV b'].location[0] = random.uniform(260, 279)
-    bpy.data.objects['S-IV b'].location[1] = random.uniform(40.447, 45.480)
-    bpy.data.objects['S-IV b'].location[2] = random.uniform(-5, 7)
-
-    bpy.data.objects['S-IV b'].rotation_euler[0] = random.uniform(0, 6.26573)
-    bpy.data.objects['S-IV b'].rotation_euler[1] = random.uniform(0, 6.26573)
-    bpy.data.objects['S-IV b'].rotation_euler[2] = random.uniform(0, 6.26573)
-
-def calc_img_ratio(img):
-    # Calculate the black ratio of the image
-
-    # Convert image to grayscale
-    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    # Calculate the black ratio
-    total_pixels = gray_img.size
-    black_mask = (gray_img == 0).astype(np.uint8)  # 黒色のピクセルを選択
-    black_pixels = np.count_nonzero(black_mask)
-    black_ratio = black_pixels / total_pixels
-
-    # round black ratio
-    black_ratio = round(black_ratio, 1)
-
-    return black_ratio
-
-def calc_iou(img1, img2):
-    # Calculate the IoU of the image
-
-    # Convert image to grayscale
-    # gray_img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-    # gray_img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-
-    # Convert image to binary
-    _, bin_img1 = cv2.threshold(img1, 1, 255, cv2.THRESH_BINARY)
-    _, bin_img2 = cv2.threshold(img2, 1, 255, cv2.THRESH_BINARY)
-
-    # divide by 255
-    bin_img1 = bin_img1 / 255
-    bin_img2 = bin_img2 / 255
-
-    # save binary image
-    # cv2.imwrite(os.path.join(TRAIN_INPUT_DIR, "a.jpg"), bin_img1)
-    # cv2.imwrite(os.path.join(TRAIN_OUTPUT_DIR, "b.jpg"), bin_img2)
-    # print(bin_img1)
-    # print(bin_img2)
-    # Calculate the IoU of white area
-    intersection = np.logical_and(bin_img1, bin_img2)
-    # union = np.logical_or(bin_img1, bin_img2)
-    # iou = np.sum(intersection) / np.sum(union)
-    intersection = np.sum(intersection) / np.sum(bin_img2)
-    # if intersection != 0 and intersection != 1:
-    #     print("break")
-    #     print(bin_img1)
-    #     print(bin_img2)
-    #     # intersection = np.sum(intersection) / np.sum(bin_img2)
-    #     print(intersection)
-    #     time.sleep(4)
-    # intersection = np.sum(intersection) / np.sum(bin_img2)
-
-    intersection = round(intersection, 1)
-    # print(intersection)
-    # if intersection != 0 and intersection != 1:
-    #     time.sleep(1)
-
-    return intersection
-
-def main():
-
-    # make dataset directory
+def render_batch(start_idx, end_idx, input_dir, output_dir):
     make_file()
 
-    # make csv file
-    make_csvfile(TRAIN_DIR, TRAIN_PIC)
-    make_csvfile(VALID_DIR, VALID_PIC)
-    make_csvfile2(TRAIN_DIR, TRAIN_PIC)
-    make_csvfile2(VALID_DIR, VALID_PIC)
-    # make_csvfile(EX_TRAIN_INPUT_DIR, TRAIN_PIC)
-    # make_csvfile(EX_VALID_INPUT_DIR, VALID_PIC)
+    # init_camera()
 
-    # if flug == 0 -> not save
-    # if flug == 1 -> save
-    
-    pic_count_list = [0] * 11
-    count = 0
-    set_color(WHITE)
-
-    # initialize camera
-    init_camera()
-
-    # loop to generate train images
-    while True:
-        print(pic_count_list)
-
-        # if all pictures are generated, break
-        if sum(pic_count_list) == VALID_PIC:
-            break
-    
-        # set camera
-        set_camera()
-
-        # take image
-        # Show the 'land_ocean_ice_cloud_8192' object for rendering
-        bpy.data.objects["land_ocean_ice_cloud_8192"].hide_render = False
-        bpy.data.objects["S-IV b"].hide_render = True
-
-        earth_img = np.uint16(bpycv.render_data()["depth"] * 100000)
-        print(type(earth_img))
-
-        bpy.data.objects["land_ocean_ice_cloud_8192"].hide_render = True
-        bpy.data.objects["S-IV b"].hide_render = False
-
-        debris_img = np.uint16(bpycv.render_data()["depth"] * 1000)
-        print(type(debris_img))
-
-        intersection = calc_iou(earth_img, debris_img)
-
-        print(intersection)
-
-        if intersection == 0 and pic_count_list[0] < VALID_PIC/11:
-            save_path1 = os.path.join(VALID_INPUT_DIR, "0",f"{pic_count_list[0]}.png")
-            save_path2 = os.path.join(EX_VALID_INPUT_DIR, "0",f"{pic_count_list[0]}.png")
-            save_path3 = os.path.join(VALID_OUTPUT_DIR, "0", f"{pic_count_list[0]}.png")
-            pic_count_list[0] += 1
-
-            # Save RGB image
-            # set color to white
-            bpy.data.objects["land_ocean_ice_cloud_8192"].hide_render = False
-            # bpy.data.objects["S-IV b"].hide_render = False
-
-            set_color(WHITE)
-            result = bpycv.render_data()
-            cv2.imwrite(save_path1, result["image"][..., ::-1])
-
-            # set color to excolor
-            set_color(EXCOLOR)
-            result = bpycv.render_data()
-            cv2.imwrite(save_path2, result["image"][..., ::-1])
-
-            # Hide 'land_ocean_ice_cloud_8192' object for depth rendering
-            bpy.data.objects["land_ocean_ice_cloud_8192"].hide_render = True
-
-            # Render depth
-            result = bpycv.render_data()
-
-            # Save depth image
-            depth_in_mm = result["depth"] * 1000
-            _, bin_dt_img = cv2.threshold(depth_in_mm, 1, 255, cv2.THRESH_BINARY)
-            cv2.imwrite(save_path3, depth_in_mm)
+    for i in range(start_idx, end_idx):
         
-        # elif intersection == 1 and pic_count_list[10] < VALID_PIC/10:
-        #     save_path1 = os.path.join(VALID_INPUT_DIR, "11",f"{pic_count_list[11]}.png")
-        #     save_path2 = os.path.join(EX_VALID_INPUT_DIR, "11",f"{pic_count_list[11]}.png")
-        #     save_path3 = os.path.join(VALID_OUTPUT_DIR, "11", f"{pic_count_list[11]}.png")
-        #     pic_count_list[11] += 1
+        try:
+            init_camera()
+            # sun light settings
+            bpy.data.objects['Sun'].rotation_euler[2] = random.uniform(-3.64774, 0.506145)
 
-        #     # Save RGB image
-        #     # set color to white
-        #     bpy.data.objects["land_ocean_ice_cloud_8192"].hide_render = False
-        #     # bpy.data.objects["S-IV b"].hide_render = False
+            # earth settings
+            random_earth = random.uniform(0, 6.26573)
+            bpy.data.objects['earth'].rotation_euler[2] = random_earth
+            bpy.data.objects['atmosphere'].rotation_euler[2] = random_earth
+            bpy.data.objects['cloud'].rotation_euler[2] = random_earth
 
-        #     set_color(WHITE)
-        #     result = bpycv.render_data()
-        #     cv2.imwrite(save_path1, result["image"][..., ::-1])
+            # rabdomize object settings
+            # rotation
+            random_rotx = random.uniform(0, 6.26573)
+            random_roty = random.uniform(0, 6.26573)
+            random_rotz = random.uniform(0, 6.26573)
 
-        #     # set color to excolor
-        #     set_color(EXCOLOR)
-        #     result = bpycv.render_data()
-        #     cv2.imwrite(save_path2, result["image"][..., ::-1])
+            bpy.data.objects['debris'].rotation_euler[0] = random_rotx
+            bpy.data.objects['debris'].rotation_euler[1] = random_roty
+            bpy.data.objects['debris'].rotation_euler[2] = random_rotz
 
-        #     # Hide 'land_ocean_ice_cloud_8192' object for depth rendering
-        #     bpy.data.objects["land_ocean_ice_cloud_8192"].hide_render = True
+            bpy.data.objects['decoydebris'].rotation_euler[0] = random_rotx
+            bpy.data.objects['decoydebris'].rotation_euler[1] = random_roty
+            bpy.data.objects['decoydebris'].rotation_euler[2] = random_rotz
 
-        #     # Render depth
-        #     result = bpycv.render_data()
+            # camera settings
+            # rotation
+            bpy.data.objects['CameraEmpty'].rotation_euler[0] = random.uniform(0, 6.26573)
+            bpy.data.objects['CameraEmpty'].rotation_euler[1] = random.uniform(0, 6.26573)
+            bpy.data.objects['CameraEmpty'].rotation_euler[2] = random.uniform(0, 6.26573)
 
-        #     # Save depth image
-        #     depth_in_mm = result["depth"] * 1000
-        #     _, bin_dt_img = cv2.threshold(depth_in_mm, 1, 255, cv2.THRESH_BINARY)
-        #     cv2.imwrite(save_path3, depth_in_mm)
+            # location
+            random_y = random.uniform(680, 740)
 
-        else:
-            if pic_count_list[int(intersection*10)] < VALID_PIC/11:
-                save_path1 = os.path.join(VALID_INPUT_DIR, str(int(intersection*10)),f"{pic_count_list[int(intersection*10)]}.png")
-                save_path2 = os.path.join(EX_VALID_INPUT_DIR, str(int(intersection*10)),f"{pic_count_list[int(intersection*10)]}.png")
-                save_path3 = os.path.join(VALID_OUTPUT_DIR, str(int(intersection*10)), f"{pic_count_list[int(intersection*10)]}.png")
-                pic_count_list[int(intersection*10)] += 1
+            # location xz
+            if random_y >= 730:
+                x = 17
+                z = 17
+            elif random_y > 720 and random_y < 730:
+                x = 15
+                z = 15
+            elif random_y > 710 and random_y <= 720:
+                x = 12
+                z = 12
+            elif random_y > 700 and random_y <= 710:
+                x = 8
+                z = 8
+            elif random_y > 690 and random_y <= 700:
+                x = 5
+                z = 5
+            elif random_y > 680 and random_y <= 690:
+                x = 2
+                z = 2
 
-                # Save RGB image
-                # set color to white
-                bpy.data.objects["land_ocean_ice_cloud_8192"].hide_render = False
-                # bpy.data.objects["S-IV b"].hide_render = False
+            random_x = random.uniform(-x, x)
+            random_z = random.uniform(-z, z)
 
-                set_color(WHITE)
-                result = bpycv.render_data()
-                cv2.imwrite(save_path1, result["image"][..., ::-1])
+            bpy.data.objects['Camera'].location[0] = random_x
+            bpy.data.objects['Camera'].location[1] = random_y
+            bpy.data.objects['Camera'].location[2] = random_z
 
-                # set color to excolor
-                set_color(EXCOLOR)
-                result = bpycv.render_data()
-                cv2.imwrite(save_path2, result["image"][..., ::-1])
+            # cam rotation
+            bpy.data.objects['Camera'].rotation_euler[0] = random.uniform(-1.65806, -1.39626)
+            bpy.data.objects['Camera'].rotation_euler[1] = random.uniform(0, 6.26573)
+            bpy.data.objects['Camera'].rotation_euler[2] = random.uniform(-0.174533, 0.174533)
 
-                # Hide 'land_ocean_ice_cloud_8192' object for depth rendering
-                bpy.data.objects["land_ocean_ice_cloud_8192"].hide_render = True
-
-                # Render depth
-                result = bpycv.render_data()
-
-                # Save depth image
-                depth_in_mm = result["depth"] * 1000
-                _, bin_dt_img = cv2.threshold(depth_in_mm, 1, 255, cv2.THRESH_BINARY)
-                cv2.imwrite(save_path3, depth_in_mm)
+            # Render the image
+            bpy.data.objects["atmosphere"].hide_render = False
+            bpy.data.objects["cloud"].hide_render = False
+            bpy.data.objects["earth"].hide_render = False
             
-            if sum(pic_count_list) == VALID_PIC:
-                break
-        
-        # if intersection == 0 or intersection == 1:
-        #     if pic_count_list[int(-intersection)] < VALID_PIC/10:
-        #         if intersection == 0:
-        #             dir_num = 0
-        #         else:
-        #             dir_num = 11
-        #         save_path1 = os.path.join(VALID_INPUT_DIR, str(dir_num),f"{pic_count_list[int(-intersection)]}.png")
-        #         save_path2 = os.path.join(EX_VALID_INPUT_DIR, str(dir_num),f"{pic_count_list[int(-intersection)]}.png")
-        #         save_path3 = os.path.join(VALID_OUTPUT_DIR, str(dir_num), f"{pic_count_list[int(-intersection)]}.png")
-        #         pic_count_list[int(-intersection)] += 1
-        #         flug = 1
-        # else:
-        #     if pic_count_list[int(intersection*10)] < VALID_PIC/10:
-        #         save_path1 = os.path.join(VALID_INPUT_DIR, str(int(intersection*10)),f"{pic_count_list[int(intersection*10)]}.png")
-        #         save_path2 = os.path.join(EX_VALID_INPUT_DIR, str(int(intersection*10)),f"{pic_count_list[int(intersection*10)]}.png")
-        #         save_path3 = os.path.join(VALID_OUTPUT_DIR, str(int(intersection*10)), f"{pic_count_list[int(intersection*10)]}.png")
-        #         pic_count_list[int(intersection*10)] += 1
-        #         flug = 1
+            bpy.data.objects["debris"].hide_render = False
+            bpy.data.objects["decoydebris"].hide_render = True
 
-        # if flug == 1:
-        #     # Save RGB image
-        #     # set color to white
-        #     bpy.data.objects["land_ocean_ice_cloud_8192"].hide_render = False
-        #     # bpy.data.objects["S-IV b"].hide_render = False
+            bpy.context.scene.render.filepath = input_dir + "/" + str(i+9542) + ".png"
+            bpy.context.scene.render.image_settings.file_format = 'PNG' 
+            bpy.ops.render.render(write_still=True) 
 
-        #     set_color(WHITE)
-        #     result = bpycv.render_data()
-        #     cv2.imwrite(save_path1, result["image"][..., ::-1])
+            init_camera_small()
+            # Render the Mask
+            bpy.data.objects["atmosphere"].hide_render = True
+            bpy.data.objects["cloud"].hide_render = True
+            bpy.data.objects["earth"].hide_render = True
 
-        #     # set color to excolor
-        #     set_color(EXCOLOR)
-        #     result = bpycv.render_data()
-        #     cv2.imwrite(save_path2, result["image"][..., ::-1])
+            bpy.data.objects["debris"].hide_render = True
+            bpy.data.objects["decoydebris"].hide_render = False
 
-        #     # Hide 'land_ocean_ice_cloud_8192' object for depth rendering
-        #     bpy.data.objects["land_ocean_ice_cloud_8192"].hide_render = True
+            bpy.context.scene.render.filepath = output_dir + "/" + str(i+9542) + ".png"
+            bpy.context.scene.render.image_settings.file_format = 'PNG' 
+            bpy.ops.render.render(write_still=True) 
+            
+            purge_orphan_data()
 
-        #     # Render depth
-        #     result = bpycv.render_data()
+        except Exception as e:
+            time.sleep(60)
 
-        #     # Save depth image
-        #     depth_in_mm = result["depth"] * 1000
-        #     cv2.imwrite(save_path3, np.uint16(depth_in_mm))
-        
+def render_main():
+    make_file()
 
-        # count += 1
+    # init_gpu()
 
-    #     if intersection == 0:
-    #         set_color(WHITE)
-    #         set_color(WHITE)
-    #         result = bpycv.render_data()
-    #         cv2.imwrite(os.path.join(TRAIN_INPUT_DIR, f"{count}.jpg"), result["image"][..., ::-1])
+    for batch_start in range(0, TRAIN_PIC, BATCH_SIZE):
+        batch_end = min(batch_start + BATCH_SIZE, TRAIN_PIC)
+        render_batch(batch_start, batch_end, os.path.join(TRAIN_INPUT_DIR, str(int(batch_start/BATCH_SIZE))), os.path.join(TRAIN_OUTPUT_DIR, str(int(batch_start/BATCH_SIZE))))
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+        bpy.ops.wm.open_mainfile(filepath=BLENDER_FILEPATH)
+        # init_gpu()
 
+    for batch_start in range(0, VALID_PIC, BATCH_SIZE):
+        batch_end = min(batch_start + BATCH_SIZE, VALID_PIC)
+        render_batch(batch_start, batch_end, os.path.join(VALID_INPUT_DIR, str(int(batch_start/BATCH_SIZE))), os.path.join(VALID_OUTPUT_DIR, str(int(batch_start/BATCH_SIZE))))
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+        bpy.ops.wm.open_mainfile(filepath=BLENDER_FILEPATH)
+        # init_gpu()
 
-    #     # Render image, instance annotation, and depth
-    #     result = bpycv.render_data()
-
-    #     black_ratio = calc_img_ratio(result["image"])
-
-    #     if black_ratio == 1.0:
-    #         flug = 0
-    #     else:
-    #         if pic_count_list[int(black_ratio*10)] < TRAIN_PIC/10:
-    #             pic_count_list[int(black_ratio*10)] += 1
-    #             flug = 1
-    #         else:
-    #             flug = 0
-
-    #     # save RGB image and depth image
-    #     if flug == 1:
-    #         # Save RGB image
-    #         # set color to white
-    #         set_color(WHITE)
-    #         result = bpycv.render_data()
-    #         cv2.imwrite(os.path.join(TRAIN_INPUT_DIR, f"{count}.jpg"), result["image"][..., ::-1])
-
-    #         # set color to excolor
-    #         set_color(EXCOLOR)
-    #         result = bpycv.render_data()
-    #         cv2.imwrite(os.path.join(EX_TRAIN_INPUT_DIR, f"{count}.jpg"), result["image"][..., ::-1])
-
-    #         # Hide 'land_ocean_ice_cloud_8192' object for depth rendering
-    #         bpy.data.objects["land_ocean_ice_cloud_8192"].hide_render = True
-
-    #         # Render depth
-    #         result = bpycv.render_data()
-
-    #         # Save depth image
-    #         depth_in_mm = result["depth"] * 1000
-    #         cv2.imwrite(os.path.join(TRAIN_OUTPUT_DIR, f"{count}.jpg"), np.uint16(depth_in_mm))
-
-    #         count += 1
-
-    # # loop to generate valid images
-    # pic_count_list = [0] * 10
-    # count = 0
-    # set_color(WHITE)
-
-    # while True:
-    #     print(pic_count_list)
-
-    #     # if all pictures are generated, break
-    #     if sum(pic_count_list) == VALID_PIC:
-    #         break
-    
-    #     # set camera
-    #     set_camera()
-
-    #     # take image
-    #     # Show the 'land_ocean_ice_cloud_8192' object for rendering
-    #     bpy.data.objects["land_ocean_ice_cloud_8192"].hide_render = False
-
-    #     # Render image, instance annotation, and depth
-    #     result = bpycv.render_data()
-
-    #     black_ratio = calc_img_ratio(result["image"])
-
-    #     if black_ratio == 1.0:
-    #         flug = 0
-    #     else:
-    #         if pic_count_list[int(black_ratio*10)] < VALID_PIC/10:
-    #             pic_count_list[int(black_ratio*10)] += 1
-    #             flug = 1
-    #         else:
-    #             flug = 0
-
-    #     # save RGB image and depth image
-    #     if flug == 1:
-    #         # Save RGB image
-    #         # set color to white
-    #         set_color(WHITE)
-    #         result = bpycv.render_data()
-    #         cv2.imwrite(os.path.join(VALID_INPUT_DIR, f"{count}.jpg"), result["image"][..., ::-1])
-
-    #         # set color to excolor
-    #         set_color(EXCOLOR)
-    #         result = bpycv.render_data()
-    #         cv2.imwrite(os.path.join(EX_VALID_INPUT_DIR, f"{count}.jpg"), result["image"][..., ::-1])
-
-    #         # Hide 'land_ocean_ice_cloud_8192' object for depth rendering
-    #         bpy.data.objects["land_ocean_ice_cloud_8192"].hide_render = True
-
-    #         # Render depth
-    #         result = bpycv.render_data()
-
-    #         # Save depth image
-    #         depth_in_mm = result["depth"] * 1000
-    #         cv2.imwrite(os.path.join(VALID_OUTPUT_DIR, f"{count}.jpg"), np.uint16(depth_in_mm))
-
-    #         count += 1
 
 if __name__ == "__main__":
     
     start_time = time.time()
-    main()
+    render_main()
 
     elapsed_time = time.time() - start_time
     print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
