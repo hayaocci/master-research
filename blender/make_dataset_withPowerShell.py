@@ -1,12 +1,4 @@
-# 2024/07/02 16:00追記
-# .ps1ファイルで実行すると色々と不都合が発生してしまうので、.ps1ファイルで実行する用の
-# スクリプトを作成しました。 -> make_dataset_withPowerShell.py
-# これは古いバージョンです。最新のバージョンはmake_dataset_withPowerShell.pyです。
-
-# """
-# Blenderでデータセットを作成するスクリプト
-# 地球とデブリのIoUで区別する
-# """
+# PowerShellで実行するためのスクリプト
 
 import os
 import numpy as np
