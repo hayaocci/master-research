@@ -19,10 +19,10 @@ NUM_PIC = 100 # 100~ && x100
 SPLIT_RATIO = 0.8
 # TRAIN_PIC = int(NUM_PIC * SPLIT_RATIO)
 # TRAIN_PIC = 8000
-TRAIN_PIC = 10
+TRAIN_PIC = 1
 # VALID_PIC = 11*200 #NUM_PIC - TRAIN_PIC
-VALID_PIC = 10#2000
-BATCH_SIZE = 5
+VALID_PIC = 1#2000
+BATCH_SIZE = 1
 
 # colors
 WHITE = [1, 1, 1, 1]
@@ -88,10 +88,10 @@ def init_camera_small():
     bpy.context.scene.render.engine = 'CYCLES'
     bpy.context.scene.cycles.samples = 64
 
-# def init_gpu():
-#     bpy.context.preferences.system.memory_cache_limit = 2  # 2GBのメモリキャッシュ制限
-#     bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'
-#     bpy.context.scene.cycles.device = 'GPU'
+def init_gpu():
+    bpy.context.preferences.system.memory_cache_limit = 2  # 2GBのメモリキャッシュ制限
+    bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'
+    bpy.context.scene.cycles.device = 'GPU'
 
 def purge_orphan_data():
     # Purge orphan data to free memory
@@ -228,3 +228,5 @@ if __name__ == "__main__":
 
     elapsed_time = time.time() - start_time
     print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
+
+    bpy.ops.wm.quit_blender()
