@@ -1,0 +1,11 @@
+taguchi_dataset/
+test_result/
+test_result_basic/
+test_result_gloc/
+test/
+train/
+test_result_main/
+20240624_dataset/
+master_data/
+valid_result/
+data/
