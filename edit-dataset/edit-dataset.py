@@ -62,6 +62,16 @@ def crop_main(input_dir, output_dir):
 
     print(f"img:{sum(os.path.isfile(os.path.join(input_dir, name)) for name in os.listdir(input_dir))} === Cropped images saved in {output_dir}")
 
+def convert_to_bin(img):
+
+    # convert grayscale img to binary img
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    return binary
+
+
+
 if __name__ == '__main__':
     # change_contrast_main(IMG_DIR, EDIT_IMG_DIR)
     crop_main('edit-img/original', 'edit-img/edit')
