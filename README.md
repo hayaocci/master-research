@@ -21,7 +21,7 @@ https://projects.blender.org/blender/blender/issues/117229
 
 #### 2024/07/02
 Blenderでデータセットを作成する際にGPUのメモリに問題があるため処理が落ちてしまう問題  
->>> Powershellで実行するプログラムを作成した
+> Powershellで実行するプログラムを作成した
 
 #### 2024/07/09
 master-research ディレクトリの整理

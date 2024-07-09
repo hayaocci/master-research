@@ -10,6 +10,15 @@ SPLIT_NUM = 1
 RAW_DATA_DIR = "rawdata"  # 生データ
 DATA_DIR = "master_data"  # データセット。生データを変換したもの
 
+# dataset path
+dataset_main_dir = "../../../dataset"
+dataset_name = "20240624_dataset" # 主にここを変更する
+dataset_dir = os.path.join(dataset_main_dir, dataset_name)
+train_dir = os.path.join(dataset_dir, "train")
+valid_dir = os.path.join(dataset_dir, "valid")
+
+
+
 # 保存するモデルのパス
 MODEL_DIR = "master_model/"
 SPRESENSE_MODEL_DIR = "../../Spresense/detect_people/"

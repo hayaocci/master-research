@@ -55,11 +55,11 @@ x_valid = []
 y_valid = []
 ignore = False  # falseの方が精度が高い
 
-trans_lst = []
-center = (INPUT_SIZE[0] / 2, INPUT_SIZE[1] / 2)
-scale = 1.0
-for i in [theta for theta in [0, 90, 30]]:
-    trans_lst.append(cv2.getRotationMatrix2D(center, i, scale))
+# trans_lst = []
+# center = (INPUT_SIZE[0] / 2, INPUT_SIZE[1] / 2)
+# scale = 1.0
+# for i in [theta for theta in [0, 90, 30]]:
+#     trans_lst.append(cv2.getRotationMatrix2D(center, i, scale))
 
     # for dir in ["train", "valid"]:
 dataset = []
