@@ -8,7 +8,7 @@ ALPHA = 0.75  # 1はダメ0.5は行ける
 SPLIT_NUM = 1
 
 RAW_DATA_DIR = "rawdata"  # 生データ
-DATA_DIR = "master_data"  # データセット。生データを変換したもの
+DATA_DIR = "../AI6_softmax/master_data"  # データセット。生データを変換したもの
 
 # dataset path
 dataset_main_dir = "../../../dataset"
@@ -32,3 +32,6 @@ SPRESENSE_HEADER_QUANT_MODEL_PATH = os.path.join(
     SPRESENSE_MODEL_DIR, "spresense_model_quant.h"
 )
 SPRESENSE_HEADER_MODEL_PATH = os.path.join(SPRESENSE_MODEL_DIR, "spresense_model.h")
+
+
+VALID_DIR = "../../../valid_result/20240710"

@@ -256,18 +256,20 @@ custom_model.fit(
 
 """
 テストデータでテスト
+ここまでこれたら、モデルは一応学習できている
 """
 
-test_dir = "valid_result/valid_20240624"
-if os.path.exists(test_dir) == False:
-    os.makedirs(test_dir)
-else:
-    import shutil
+# test_dir = "valid_result/valid_20240624"
+test_dir = "../../../valid_result/20240710"
+# if os.path.exists(test_dir) == False:
+#     os.makedirs(test_dir)
+# else:
+#     import shutil
 
-    shutil.rmtree(test_dir)
-    os.mkdir(test_dir)
-test_img_dir = "20240624_dataset/valid/input"
-test_label_dir = "20240624_dataset/valid/label"
+#     shutil.rmtree(test_dir)
+#     os.mkdir(test_dir)
+test_img_dir = "../../../dataset/20240624_dataset/valid/input"
+test_label_dir = "../../../dataset/20240624_dataset/valid/bin_label"
 custom_model = load_model("master_model/best_model.h5", custom_objects={'cross_loss': loss.cross_loss, 'IoU': loss.IoU})
 # custom_model = keras.models.load_model("model/best_model.h5")
 
@@ -303,6 +305,7 @@ for i, (img, label) in enumerate(zip(tqdm(os.listdir(test_img_dir)), os.listdir(
 # %%
 """
 save Model
+ここまではOK
 """
 if os.path.exists("master_model") == False:
     os.mkdir("master_model")
@@ -315,7 +318,7 @@ float_model_size = len(tflite_model) / 1024 / 1024
 print(f"float model size: {float_model_size} MB")
 open(TFLITE_MODEL_PATH, "wb").write(tflite_model)
 
-
+# %%
 import binascii
 
 
