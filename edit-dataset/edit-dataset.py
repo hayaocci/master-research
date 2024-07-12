@@ -49,8 +49,10 @@ def crop_main(input_dir, output_dir):
         smallest_value = min(numeric_filenames) # ファイル名の最長値を取得
 
     for i in range(sum(os.path.isfile(os.path.join(input_dir, name)) for name in os.listdir(input_dir))):
-        
-        img = cv2.imread(os.path.join(input_dir, str(i+smallest_value) + '.png'))
+        try:
+            img = cv2.imread(os.path.join(input_dir, str(i+smallest_value) + '.png'))
+        except:
+            img = cv2.imread(os.path.join(input_dir, str(i+smallest_value) + '.jpg'))
         
         if img is None:
             print('Could not open or find the image:', input_dir + str(i+smallest_value) + '.png')
@@ -71,7 +73,13 @@ def convert_to_bin(img):
     return binary
 
 
+img = cv2.imread('edit-img/original/1.jpg')
+new_img = module.process_image.crop_square(img)
+new_img = module.process_image.change_size(new_img, IMG_SIZE)
+cv2.imwrite('edit-img/edit/1.png', new_img)
 
-if __name__ == '__main__':
+
+# if __name__ == '__main__':
     # change_contrast_main(IMG_DIR, EDIT_IMG_DIR)
-    crop_main('edit-img/original', 'edit-img/edit')
+    # crop_main('edit-img/original/', 'edit-img/edit')
+

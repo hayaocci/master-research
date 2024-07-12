@@ -260,7 +260,7 @@ custom_model.fit(
 """
 
 # test_dir = "valid_result/valid_20240624"
-test_dir = "../../../valid_result/20240710"
+test_dir = "../../../valid_result/20240710_1"
 # if os.path.exists(test_dir) == False:
 #     os.makedirs(test_dir)
 # else:
@@ -268,14 +268,14 @@ test_dir = "../../../valid_result/20240710"
 
 #     shutil.rmtree(test_dir)
 #     os.mkdir(test_dir)
-test_img_dir = "../../../dataset/20240624_dataset/valid/input"
+test_img_dir = "../../../dataset/20240624_dataset/valid/contrast_changed_input"
+# test_img_dir = "../../../data/real_img"
 test_label_dir = "../../../dataset/20240624_dataset/valid/bin_label"
 custom_model = load_model("master_model/best_model.h5", custom_objects={'cross_loss': loss.cross_loss, 'IoU': loss.IoU})
 # custom_model = keras.models.load_model("model/best_model.h5")
 
 # %%
-# for i, img in enumerate(tqdm(os.listdir(test_img_dir))):
-# for i, (img, label) in enumerate(tqdm(zip(os.listdir(test_img_dir), os.listdir(test_label_dir)))):
+
 for i, (img, label) in enumerate(zip(tqdm(os.listdir(test_img_dir)), os.listdir(test_label_dir))):
     img = os.path.join(test_img_dir, img)
     img = cv2.imread(img)
