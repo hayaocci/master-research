@@ -20,14 +20,14 @@ import time
 
 # Constants
 IMG_SIZE = (96, 96)
-NUM_PIC = 100 # 100~ && x100
+NUM_PIC = 20000 # 100~ && x100
 SPLIT_RATIO = 0.8
 # TRAIN_PIC = int(NUM_PIC * SPLIT_RATIO)
 # TRAIN_PIC = 8000
-TRAIN_PIC = 1
+TRAIN_PIC = NUM_PIC * SPLIT_RATIO
 # VALID_PIC = 11*200 #NUM_PIC - TRAIN_PIC
-VALID_PIC = 1#2000
-BATCH_SIZE = 1
+VALID_PIC = NUM_PIC - TRAIN_PIC
+BATCH_SIZE = 500
 
 # colors
 WHITE = [1, 1, 1, 1]
@@ -67,13 +67,11 @@ def make_file():
     os.makedirs(VALID_OUTPUT_DIR, exist_ok=True)
     # os.makedirs(EX_VALID_INPUT_DIR, exist_ok=True)
 
-    for i in range(int(TRAIN_PIC / BATCH_SIZE)):
-        os.makedirs(os.path.join(TRAIN_INPUT_DIR, str(int(i))), exist_ok=True)
-        os.makedirs(os.path.join(TRAIN_OUTPUT_DIR, str(int(i))), exist_ok=True)
-        # os.makedirs(os.path.join(EX_TRAIN_INPUT_DIR, str(i)), exist_ok=True)
-        os.makedirs(os.path.join(VALID_INPUT_DIR, str(int(i))), exist_ok=True)
-        os.makedirs(os.path.join(VALID_OUTPUT_DIR, str(int(i))), exist_ok=True)
-        # os.makedirs(os.path.join(EX_VALID_INPUT_DIR, str(i)), exist_ok=True)
+    # for i in range(int(TRAIN_PIC / BATCH_SIZE)):
+    #     os.makedirs(os.path.join(TRAIN_INPUT_DIR, str(int(i))), exist_ok=True)
+    #     os.makedirs(os.path.join(TRAIN_OUTPUT_DIR, str(int(i))), exist_ok=True)
+    #     os.makedirs(os.path.join(VALID_INPUT_DIR, str(int(i))), exist_ok=True)
+    #     os.makedirs(os.path.join(VALID_OUTPUT_DIR, str(int(i))), exist_ok=True)
 
     print("Directory created.")
 
@@ -142,30 +140,34 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
             bpy.data.objects['CameraEmpty'].rotation_euler[2] = random.uniform(0, 6.26573)
 
             # location
-            random_y = random.uniform(680, 740)
+            # random_y = random.uniform(680, 740)
+            random_y = 679
 
             # location xz
-            if random_y >= 730:
-                x = 17
-                z = 17
-            elif random_y > 720 and random_y < 730:
-                x = 15
-                z = 15
-            elif random_y > 710 and random_y <= 720:
-                x = 12
-                z = 12
-            elif random_y > 700 and random_y <= 710:
-                x = 8
-                z = 8
-            elif random_y > 690 and random_y <= 700:
-                x = 5
-                z = 5
-            elif random_y > 680 and random_y <= 690:
-                x = 2
-                z = 2
+            # if random_y >= 730:
+            #     x = 17
+            #     z = 17
+            # elif random_y > 720 and random_y < 730:
+            #     x = 15
+            #     z = 15
+            # elif random_y > 710 and random_y <= 720:
+            #     x = 12
+            #     z = 12
+            # elif random_y > 700 and random_y <= 710:
+            #     x = 8
+            #     z = 8
+            # elif random_y > 690 and random_y <= 700:
+            #     x = 5
+            #     z = 5
+            # elif random_y > 680 and random_y <= 690:
+            #     x = 2
+            #     z = 2
 
-            random_x = random.uniform(-x, x)
-            random_z = random.uniform(-z, z)
+            # random_x = random.uniform(-x, x)
+            # random_z = random.uniform(-z, z)
+
+            random_x = 0
+            random_z = 0
 
             bpy.data.objects['Camera'].location[0] = random_x
             bpy.data.objects['Camera'].location[1] = random_y
@@ -184,7 +186,7 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
             bpy.data.objects["debris"].hide_render = False
             bpy.data.objects["decoydebris"].hide_render = True
 
-            bpy.context.scene.render.filepath = input_dir + "/" + str(i+9542) + ".png"
+            bpy.context.scene.render.filepath = input_dir + "/" + str(i) + ".png"
             bpy.context.scene.render.image_settings.file_format = 'PNG' 
             bpy.ops.render.render(write_still=True) 
 
@@ -197,7 +199,7 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
             bpy.data.objects["debris"].hide_render = True
             bpy.data.objects["decoydebris"].hide_render = False
 
-            bpy.context.scene.render.filepath = output_dir + "/" + str(i+9542) + ".png"
+            bpy.context.scene.render.filepath = output_dir + "/" + str(i) + ".png"
             bpy.context.scene.render.image_settings.file_format = 'PNG' 
             bpy.ops.render.render(write_still=True) 
             
@@ -205,22 +207,25 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
 
         except Exception as e:
             time.sleep(60)
+            print(e)
 
 def render_main():
     make_file()
 
     # init_gpu()
 
-    for batch_start in range(0, TRAIN_PIC, BATCH_SIZE):
+    for batch_start in range(0, int(TRAIN_PIC), int(BATCH_SIZE)):
         batch_end = min(batch_start + BATCH_SIZE, TRAIN_PIC)
-        render_batch(batch_start, batch_end, os.path.join(TRAIN_INPUT_DIR, str(int(batch_start/BATCH_SIZE))), os.path.join(TRAIN_OUTPUT_DIR, str(int(batch_start/BATCH_SIZE))))
+        # render_batch(batch_start, batch_end, os.path.join(TRAIN_INPUT_DIR, str(int(batch_start/BATCH_SIZE))), os.path.join(TRAIN_OUTPUT_DIR, str(int(batch_start/BATCH_SIZE))))
+        render_batch(batch_start, batch_end, TRAIN_INPUT_DIR, TRAIN_OUTPUT_DIR)
         bpy.ops.wm.read_factory_settings(use_empty=True)
         bpy.ops.wm.open_mainfile(filepath=BLENDER_FILEPATH)
         # init_gpu()
 
-    for batch_start in range(0, VALID_PIC, BATCH_SIZE):
+    for batch_start in range(0, int(VALID_PIC), int(BATCH_SIZE)):
         batch_end = min(batch_start + BATCH_SIZE, VALID_PIC)
-        render_batch(batch_start, batch_end, os.path.join(VALID_INPUT_DIR, str(int(batch_start/BATCH_SIZE))), os.path.join(VALID_OUTPUT_DIR, str(int(batch_start/BATCH_SIZE))))
+        # render_batch(batch_start, batch_end, os.path.join(VALID_INPUT_DIR, str(int(batch_start/BATCH_SIZE))), os.path.join(VALID_OUTPUT_DIR, str(int(batch_start/BATCH_SIZE))))
+        render_batch(batch_start, batch_end, VALID_INPUT_DIR, VALID_OUTPUT_DIR)
         bpy.ops.wm.read_factory_settings(use_empty=True)
         bpy.ops.wm.open_mainfile(filepath=BLENDER_FILEPATH)
         # init_gpu()
