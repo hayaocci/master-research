@@ -33,12 +33,29 @@ def plot_histograms(hist1, hist2):
     plt.tight_layout()
     plt.show()
 
+def gaussian_blur(image, kernel_size=21):
+    return cv2.GaussianBlur(image, (kernel_size, kernel_size), 21)
+
+
+
 # 画像を読み込む
 # img1 = cv2.imread('../data/real_img/0.png')
 # img2 = cv2.imread('../data/real_img/1.jpg')
 
-img1 = cv2.imread('3.png')
-img2 = cv2.imread('2.jpg')
+img1 = cv2.imread('8.png')
+img2 = cv2.imread('7.jpg')
+
+
+
+cv2.imshow('image', gaussian_blur(img1))
+cv2.imwrite('8_blur.png', gaussian_blur(img1))
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+cv2.imshow('image', gaussian_blur(img2))
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+
 
 # BGR to RGB
 img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
