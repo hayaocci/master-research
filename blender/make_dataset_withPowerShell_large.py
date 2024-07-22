@@ -11,8 +11,8 @@ import csv
 import time
 
 # Constants
-IMG_SIZE = (96, 96)
-LABEL_IMG_SIZE = (12, 12)
+IMG_SIZE = (224, 224)
+LABEL_IMG_SIZE = (224, 224)
 NUM_PIC = 20000 # 100~ && x100
 SPLIT_RATIO = 0.8
 # TRAIN_PIC = int(NUM_PIC * SPLIT_RATIO)
