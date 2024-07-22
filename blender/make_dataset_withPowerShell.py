@@ -12,6 +12,7 @@ import time
 
 # Constants
 IMG_SIZE = (96, 96)
+LABEL_IMG_SIZE = (12, 12)
 NUM_PIC = 10000 # 100~ && x100
 SPLIT_RATIO = 0.8
 # TRAIN_PIC = int(NUM_PIC * SPLIT_RATIO)
@@ -60,12 +61,12 @@ def make_file():
     os.makedirs(VALID_OUTPUT_DIR, exist_ok=True)
     # os.makedirs(EX_VALID_INPUT_DIR, exist_ok=True)
 
-    for i in range(int(TRAIN_PIC / BATCH_SIZE)):
-        os.makedirs(os.path.join(TRAIN_INPUT_DIR, str(int(i))), exist_ok=True)
-        os.makedirs(os.path.join(TRAIN_OUTPUT_DIR, str(int(i))), exist_ok=True)
-        # os.makedirs(os.path.join(EX_TRAIN_INPUT_DIR, str(i)), exist_ok=True)
-        os.makedirs(os.path.join(VALID_INPUT_DIR, str(int(i))), exist_ok=True)
-        os.makedirs(os.path.join(VALID_OUTPUT_DIR, str(int(i))), exist_ok=True)
+    # for i in range(int(TRAIN_PIC / BATCH_SIZE)):
+    #     os.makedirs(os.path.join(TRAIN_INPUT_DIR, str(int(i))), exist_ok=True)
+    #     os.makedirs(os.path.join(TRAIN_OUTPUT_DIR, str(int(i))), exist_ok=True)
+    #     # os.makedirs(os.path.join(EX_TRAIN_INPUT_DIR, str(i)), exist_ok=True)
+    #     os.makedirs(os.path.join(VALID_INPUT_DIR, str(int(i))), exist_ok=True)
+    #     os.makedirs(os.path.join(VALID_OUTPUT_DIR, str(int(i))), exist_ok=True)
         # os.makedirs(os.path.join(EX_VALID_INPUT_DIR, str(i)), exist_ok=True)
 
     print("Directory created.")
@@ -81,8 +82,8 @@ def init_camera():
 def init_camera_small():
     # setting resolution
     bpy.context.scene.cycles.use_denoising = False
-    bpy.context.scene.render.resolution_x = 12
-    bpy.context.scene.render.resolution_y = 12
+    bpy.context.scene.render.resolution_x = LABEL_IMG_SIZE[0]
+    bpy.context.scene.render.resolution_y = LABEL_IMG_SIZE[1]
     bpy.context.scene.render.engine = 'CYCLES'
     bpy.context.scene.cycles.samples = 64
 
@@ -182,7 +183,7 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
             bpy.data.objects["debris"].hide_render = False
             bpy.data.objects["decoydebris"].hide_render = True
 
-            bpy.context.scene.render.filepath = input_dir + "/" + str(i+9542) + ".png"
+            bpy.context.scene.render.filepath = input_dir + "/" + str(i) + ".png"
             bpy.context.scene.render.image_settings.file_format = 'PNG' 
             bpy.ops.render.render(write_still=True) 
 
@@ -195,7 +196,7 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
             bpy.data.objects["debris"].hide_render = True
             bpy.data.objects["decoydebris"].hide_render = False
 
-            bpy.context.scene.render.filepath = output_dir + "/" + str(i+9542) + ".png"
+            bpy.context.scene.render.filepath = output_dir + "/" + str(i) + ".png"
             bpy.context.scene.render.image_settings.file_format = 'PNG' 
             bpy.ops.render.render(write_still=True) 
             
@@ -211,14 +212,16 @@ def render_main():
 
     for batch_start in range(0, TRAIN_PIC, BATCH_SIZE):
         batch_end = min(batch_start + BATCH_SIZE, TRAIN_PIC)
-        render_batch(batch_start, batch_end, os.path.join(TRAIN_INPUT_DIR, str(int(batch_start/BATCH_SIZE))), os.path.join(TRAIN_OUTPUT_DIR, str(int(batch_start/BATCH_SIZE))))
+        # render_batch(batch_start, batch_end, os.path.join(TRAIN_INPUT_DIR, str(int(batch_start/BATCH_SIZE))), os.path.join(TRAIN_OUTPUT_DIR, str(int(batch_start/BATCH_SIZE))))
+        render_batch(batch_start, batch_end, TRAIN_INPUT_DIR, TRAIN_OUTPUT_DIR)
         bpy.ops.wm.read_factory_settings(use_empty=True)
         bpy.ops.wm.open_mainfile(filepath=BLENDER_FILEPATH)
         # init_gpu()
 
     for batch_start in range(0, VALID_PIC, BATCH_SIZE):
         batch_end = min(batch_start + BATCH_SIZE, VALID_PIC)
-        render_batch(batch_start, batch_end, os.path.join(VALID_INPUT_DIR, str(int(batch_start/BATCH_SIZE))), os.path.join(VALID_OUTPUT_DIR, str(int(batch_start/BATCH_SIZE))))
+        # render_batch(batch_start, batch_end, os.path.join(VALID_INPUT_DIR, str(int(batch_start/BATCH_SIZE))), os.path.join(VALID_OUTPUT_DIR, str(int(batch_start/BATCH_SIZE))))
+        render_batch(batch_start, batch_end, VALID_INPUT_DIR, VALID_OUTPUT_DIR)
         bpy.ops.wm.read_factory_settings(use_empty=True)
         bpy.ops.wm.open_mainfile(filepath=BLENDER_FILEPATH)
         # init_gpu()
