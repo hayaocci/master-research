@@ -12,14 +12,15 @@ import time
 
 # Constants
 IMG_SIZE = (96, 96)
-NUM_PIC = 100 # 100~ && x100
+NUM_PIC = 10000 # 100~ && x100
 SPLIT_RATIO = 0.8
 # TRAIN_PIC = int(NUM_PIC * SPLIT_RATIO)
 # TRAIN_PIC = 8000
-TRAIN_PIC = 1
+TRAIN_PIC = NUM_PIC * SPLIT_RATIO
 # VALID_PIC = 11*200 #NUM_PIC - TRAIN_PIC
-VALID_PIC = 1#2000
-BATCH_SIZE = 1
+VALID_PIC = NUM_PIC - TRAIN_PIC
+BATCH_SIZE = 500
+RANDOM_SETTING = False # True: randomize camera location, False: fixed camera location
 
 # colors
 WHITE = [1, 1, 1, 1]
@@ -134,30 +135,35 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
             bpy.data.objects['CameraEmpty'].rotation_euler[2] = random.uniform(0, 6.26573)
 
             # location
-            random_y = random.uniform(680, 740)
+            if RANDOM_SETTING == True:
+                random_y = random.uniform(680, 740)
 
-            # location xz
-            if random_y >= 730:
-                x = 17
-                z = 17
-            elif random_y > 720 and random_y < 730:
-                x = 15
-                z = 15
-            elif random_y > 710 and random_y <= 720:
-                x = 12
-                z = 12
-            elif random_y > 700 and random_y <= 710:
-                x = 8
-                z = 8
-            elif random_y > 690 and random_y <= 700:
-                x = 5
-                z = 5
-            elif random_y > 680 and random_y <= 690:
-                x = 2
-                z = 2
+                # location xz
+                if random_y >= 730:
+                    x = 17
+                    z = 17
+                elif random_y > 720 and random_y < 730:
+                    x = 15
+                    z = 15
+                elif random_y > 710 and random_y <= 720:
+                    x = 12
+                    z = 12
+                elif random_y > 700 and random_y <= 710:
+                    x = 8
+                    z = 8
+                elif random_y > 690 and random_y <= 700:
+                    x = 5
+                    z = 5
+                elif random_y > 680 and random_y <= 690:
+                    x = 2
+                    z = 2
 
-            random_x = random.uniform(-x, x)
-            random_z = random.uniform(-z, z)
+                random_x = random.uniform(-x, x)
+                random_z = random.uniform(-z, z)
+            else:
+                random_y = 679
+                random_x = 0
+                random_z = 0
 
             bpy.data.objects['Camera'].location[0] = random_x
             bpy.data.objects['Camera'].location[1] = random_y
