@@ -318,7 +318,7 @@ def render_main():
     else:
         # render
         file_count = get_file_num(TRAIN_OUTPUT_DIR)
-        for i in range(500):
+        for i in range(BATCH_SIZE):
             try:
                 init_camera()
                 set_all_object()
@@ -337,7 +337,7 @@ def render_main():
     else:
         # render
         file_count = get_file_num(VALID_OUTPUT_DIR)
-        for i in range(500):
+        for i in range(BATCH_SIZE):
             try:
                 init_camera()
                 set_all_object()
