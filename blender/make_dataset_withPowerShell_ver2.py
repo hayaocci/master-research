@@ -310,9 +310,49 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
         except Exception as e:
             time.sleep(60)
 
-
-
 def render_main():
+    make_dir()
+
+    if get_file_num(TRAIN_OUTPUT_DIR) == TRAIN_PIC:
+        pass
+    else:
+        # render
+        file_count = get_file_num(TRAIN_OUTPUT_DIR)
+        for i in range(500):
+            try:
+                init_camera()
+                set_all_object()
+
+                render_img(TRAIN_INPUT_DIR, TRAIN_OUTPUT_DIR, str(file_count+i))
+
+            except Exception as e:
+                time.sleep(60)
+
+            if file_count+i == TRAIN_PIC:
+                break
+
+
+    if get_file_num(VALID_OUTPUT_DIR) == VALID_PIC:
+        pass
+    else:
+        # render
+        file_count = get_file_num(VALID_OUTPUT_DIR)
+        for i in range(500):
+            try:
+                init_camera()
+                set_all_object()
+
+                render_img(VALID_INPUT_DIR, VALID_OUTPUT_DIR, str(file_count+i))
+
+            except Exception as e:
+                time.sleep(60)
+
+            if file_count+i == VALID_PIC:
+                break
+            
+    print("Rendering Completed")
+
+def render_main_old():
     make_dir()
 
     # get file count
@@ -340,6 +380,8 @@ def render_main():
 if __name__ == "__main__":
     
     start_time = time.time()
+
+    render_main()
 
     elapsed_time = time.time() - start_time
     print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
