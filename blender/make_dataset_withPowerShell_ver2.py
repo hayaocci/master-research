@@ -23,15 +23,6 @@ VALID_PIC = int(NUM_PIC - TRAIN_PIC)
 BATCH_SIZE = int(5)
 RANDOM_SETTING = False # True: randomize camera location, False: fixed camera location
 
-# colors
-# WHITE = [1, 1, 1, 1]
-# EXCOLOR = [0.445201, 0.201556, 0.0241577, 1]
-
-# directory name
-# current_datetiem = dt.datetime.now()
-# time_name = current_datetiem.strftime('%Y%m%d_%H%M%S')
-# dir_name = time_name + "_" + str(IMG_SIZE[0]) + "x" + str(IMG_SIZE[1])
-
 # directory name manual
 dir_name = "20240723_" + str(IMG_SIZE[0]) + "x" + str(IMG_SIZE[1])
 
@@ -313,7 +304,11 @@ def render_batch(start_idx, end_idx, input_dir, output_dir):
 def render_main():
     make_dir()
 
+    isTrainCompleted = False
+
+
     if get_file_num(TRAIN_OUTPUT_DIR) == TRAIN_PIC:
+        isTrainCompleted = True
         pass
     else:
         # render
@@ -329,26 +324,27 @@ def render_main():
                 time.sleep(60)
 
             if file_count+i == TRAIN_PIC:
+                isTrainCompleted = True
                 break
 
+    if isTrainCompleted == True:
+        if get_file_num(VALID_OUTPUT_DIR) == VALID_PIC:
+            pass
+        else:
+            # render
+            file_count = get_file_num(VALID_OUTPUT_DIR)
+            for i in range(BATCH_SIZE):
+                try:
+                    init_camera()
+                    set_all_object()
 
-    if get_file_num(VALID_OUTPUT_DIR) == VALID_PIC:
-        pass
-    else:
-        # render
-        file_count = get_file_num(VALID_OUTPUT_DIR)
-        for i in range(BATCH_SIZE):
-            try:
-                init_camera()
-                set_all_object()
+                    render_img(VALID_INPUT_DIR, VALID_OUTPUT_DIR, str(file_count+i))
 
-                render_img(VALID_INPUT_DIR, VALID_OUTPUT_DIR, str(file_count+i))
+                except Exception as e:
+                    time.sleep(60)
 
-            except Exception as e:
-                time.sleep(60)
-
-            if file_count+i == VALID_PIC:
-                break
+                if file_count+i == VALID_PIC:
+                    break
             
     print("Rendering Completed")
 
