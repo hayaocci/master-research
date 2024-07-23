@@ -26,7 +26,7 @@ $blendFilePath = "C:\workspace\MasterResearch\blender\new_earth_ver1.03_scriptin
 
 # python file path
 # $pythonScriptPath = "C:\workspace\Github\master-research\blender\make_dataset.py" # 古いバージョン
-$pythonScriptPath = "C:\workspace\Github\master-research\blender\make_dataset_withPowerShell_large.py"
+$pythonScriptPath = "C:\workspace\Github\master-research\blender\make_dataset_withPowerShell_ver1.01.py"
 
 # 16回繰り返す
 for ($i = 1; $i -le 5; $i++) {
