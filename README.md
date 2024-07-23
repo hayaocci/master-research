@@ -1,5 +1,9 @@
 # master-research
 
+### データセット作成
+Blender内でPythonファイルを実行する -> 途中で処理落ちしてしまう  
+この問題を解消するためにPowershellを用いて実行することにした  
+
 ### 実行環境
 py391
 
