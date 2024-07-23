@@ -15,6 +15,11 @@ for ($i = 1; $i -le 20; $i++) {
         & "$blenderPath" "$blendFilePath" --python "$pythonScriptPath"
     } catch {
         Write-Host "エラーが発生しました: $_"
+    } finally {
+        # Blenderプロセスを強制終了
+        taskkill /F /IM blender.exe
+        # プロセスが完全に終了するまで少し待機
+        Start-Sleep -Seconds 5
     }
 }
 

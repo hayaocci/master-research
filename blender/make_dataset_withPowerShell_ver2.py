@@ -326,6 +326,8 @@ def render_main():
             if file_count+i == TRAIN_PIC:
                 isTrainCompleted = True
                 break
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+        bpy.ops.wm.open_mainfile(filepath=BLENDER_FILEPATH)
 
     if isTrainCompleted == True:
         if get_file_num(VALID_OUTPUT_DIR) == VALID_PIC:
@@ -345,6 +347,8 @@ def render_main():
 
                 if file_count+i == VALID_PIC:
                     break
+            bpy.ops.wm.read_factory_settings(use_empty=True)
+            bpy.ops.wm.open_mainfile(filepath=BLENDER_FILEPATH)
             
     print("Rendering Completed")
 
@@ -381,5 +385,4 @@ if __name__ == "__main__":
 
     elapsed_time = time.time() - start_time
     print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
-
     bpy.ops.wm.quit_blender()
