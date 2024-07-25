@@ -11,20 +11,25 @@ import csv
 import time
 
 # Constants
-IMG_SIZE = (224, 224)
-LABEL_IMG_SIZE = (224, 224)
-NUM_PIC = 20000 # 100~ && x100
+IMG_SIZE = (960, 960)
+LABEL_IMG_SIZE = (12, 12)
+NUM_PIC = 10 # 100~ && x100
 SPLIT_RATIO = 0.8
 # TRAIN_PIC = int(NUM_PIC * SPLIT_RATIO)
 # TRAIN_PIC = 8000
 TRAIN_PIC = int(NUM_PIC * SPLIT_RATIO)
 # VALID_PIC = 11*200 #NUM_PIC - TRAIN_PIC
 VALID_PIC = int(NUM_PIC - TRAIN_PIC)
-BATCH_SIZE = int(500)
+
+if NUM_PIC > 500:
+    BATCH_SIZE = 500
+else:
+    BATCH_SIZE = NUM_PIC
+
 RANDOM_SETTING = False # True: randomize camera location, False: fixed camera location
 
 # directory name manual
-dir_name = "20240723_" + str(IMG_SIZE[0]) + "x" + str(IMG_SIZE[1])
+dir_name = "20240725_1_" + str(IMG_SIZE[0]) + "x" + str(IMG_SIZE[1])
 
 # path
 # SAVE_DIR = 'C:/workspace/senior_thesis/nnc001/dataset/'
@@ -39,7 +44,7 @@ VALID_OUTPUT_DIR = os.path.join(VALID_DIR, "output")
 # EX_TRAIN_INPUT_DIR = os.path.join(TRAIN_DIR, "ex_input")
 # EX_VALID_INPUT_DIR = os.path.join(VALID_DIR, "ex_input")
 
-BLENDER_FILEPATH = 'C:/workspace/MasterResearch/blender/new_earth_ver1.03_scripting_withCamera/new_earth/earth_debris_scripting_withCamera.blend'
+BLENDER_FILEPATH = 'C:/workspace/MasterResearch/blender/new_earth_ver1.06_scripting_withCamera_sun_synchronous/new_earth/sun_synchronous_orbit.blend'
 
 def make_dir():
     """
@@ -162,6 +167,47 @@ def set_all_object():
     bpy.data.objects['Camera'].rotation_euler[0] = random.uniform(-1.65806, -1.39626)
     bpy.data.objects['Camera'].rotation_euler[1] = random.uniform(0, 6.26573)
     bpy.data.objects['Camera'].rotation_euler[2] = random.uniform(-0.174533, 0.174533)
+
+def set_object_sun_synchronous():
+    # earth settings
+    random_earth = random.uniform(0, 6.26573)
+    bpy.data.objects['earth'].rotation_euler[2] = random_earth
+    bpy.data.objects['atmosphere'].rotation_euler[2] = random_earth
+    bpy.data.objects['cloud'].rotation_euler[2] = random_earth
+
+    # rabdomize debris settings
+    # rotation
+    random_rotx = random.uniform(1.39626, 1.74533) # 80~100 deg
+    random_roty = random.uniform(0, 6.26573) # 0~360 deg
+    random_rotz = random.uniform(-0.174533, 0.174533) # -10~10 deg
+    bpy.data.objects['debris'].rotation_euler[0] = random_rotx
+    bpy.data.objects['debris'].rotation_euler[1] = random_roty
+    bpy.data.objects['debris'].rotation_euler[2] = random_rotz
+    bpy.data.objects['decoydebris'].rotation_euler[0] = random_rotx
+    bpy.data.objects['decoydebris'].rotation_euler[1] = random_roty
+    bpy.data.objects['decoydebris'].rotation_euler[2] = random_rotz
+
+    # camera settings
+    # rotation
+    bpy.data.objects['CameraEmpty'].rotation_euler[0] = 0 # 0固定
+    bpy.data.objects['CameraEmpty'].rotation_euler[1] = 0.340688 # 19.52 deg 固定
+    bpy.data.objects['CameraEmpty'].rotation_euler[2] = 4.9707 # 284.8 deg 固定
+
+    # location
+    # bpy.data.objects['DebrisCenter'].rotation_euler[0] = random.uniform(-0.5, 1.3)
+    bpy.data.objects['DebrisCenter'].rotation_euler[0] = random.uniform(0.3, 3.5)
+    # bpy.data.objects['DebrisCenter'].rotation_euler[0] = random.uniform(-0.99, 1.85)
+    bpy.data.objects['DebrisCenter'].rotation_euler[1] = 0 #固定
+    bpy.data.objects['DebrisCenter'].rotation_euler[2] = 1.5708 #固定
+
+def init_camera_location():
+    """
+    地球が写りこむようにカメラを配置する関数
+    """
+    bpy.data.objects['Camera'].rotation[0] = 3.4034
+    bpy.data.objects['Camera'].rotation[1] = 1.22173
+    bpy.data.objects['Camera'].rotation[2] = 0
+
 
 def render_img(input_dir, output_dir, file_count):
     # Render the image
@@ -306,21 +352,24 @@ def render_main():
 
     isTrainCompleted = False
 
-
     if get_file_num(TRAIN_OUTPUT_DIR) == TRAIN_PIC:
         isTrainCompleted = True
         pass
     else:
         # render
         file_count = get_file_num(TRAIN_OUTPUT_DIR)
+        
+        # init_camera_location()
         for i in range(BATCH_SIZE):
             try:
                 init_camera()
-                set_all_object()
+                # set_all_object()
+                set_object_sun_synchronous()
 
                 render_img(TRAIN_INPUT_DIR, TRAIN_OUTPUT_DIR, str(file_count+i))
 
             except Exception as e:
+                print("Error: ", e)
                 time.sleep(60)
 
             if file_count+i == TRAIN_PIC:
@@ -335,14 +384,18 @@ def render_main():
         else:
             # render
             file_count = get_file_num(VALID_OUTPUT_DIR)
+
+            # init_camera_location()
             for i in range(BATCH_SIZE):
                 try:
                     init_camera()
-                    set_all_object()
+                    # set_all_object()
+                    set_object_sun_synchronous()
 
                     render_img(VALID_INPUT_DIR, VALID_OUTPUT_DIR, str(file_count+i))
 
                 except Exception as e:
+                    print("Error: ", e)
                     time.sleep(60)
 
                 if file_count+i == VALID_PIC:

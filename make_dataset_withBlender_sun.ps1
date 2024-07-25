@@ -2,11 +2,11 @@
 $blenderPath = "C:\Program Files\Blender Foundation\Blender 4.1\blender.exe"
 
 # blender file path
-$blendFilePath = "C:\workspace\MasterResearch\blender\new_earth_ver1.03_scripting_withCamera\new_earth\earth_debris_scripting_withCamera.blend"
+$blendFilePath = 'C:/workspace/MasterResearch/blender/new_earth_ver1.06_scripting_withCamera_sun_synchronous/new_earth/sun_synchronous_orbit.blend'
 
 # python file path
 # $pythonScriptPath = "C:\workspace\Github\master-research\blender\make_dataset.py" # 古いバージョン
-$pythonScriptPath = "C:\workspace\Github\master-research\blender\make_dataset_withPowerShell_ver2.py"
+$pythonScriptPath = "C:\workspace\Github\master-research\blender\make_dataset_withPowerShell_ver3.py"
 
 # 16回繰り返す
 for ($i = 1; $i -le 50; $i++) {
