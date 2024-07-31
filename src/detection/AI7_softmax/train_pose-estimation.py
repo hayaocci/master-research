@@ -44,6 +44,33 @@ def set_seed(seed=42):
     np.random.seed(seed)
     random.seed(seed)
 
+
+def create_pose_estimation_model(base_model):
+    x = base_model.output
+    x = GlobalAveragePooling2D()(x)
+    x = Dense(1024, activation='relu')(x)
+    x = BatchNormalization()(x)
+    x = Dense(512, activation='relu')(x)
+    x = BatchNormalization()(x)
+    
+    roll_output = Dense(1, name='roll')(x)
+    pitch_output = Dense(1, name='pitch')(x)
+    yaw_output = Dense(1, name='yaw')(x)
+    
+    return Model(inputs=base_model.input, outputs=[roll_output, pitch_output, yaw_output])
+
+base_model = MobileNetV2(weights='imagenet', include_top=False, input_shape=(INPUT_SIZE[0], INPUT_SIZE[1], 3))
+custom_model = create_pose_estimation_model(base_model)
+
+# コンパイル
+custom_model.compile(
+    loss={'roll': 'mse', 'pitch': 'mse', 'yaw': 'mse'},
+    optimizer=Adam(learning_rate=0.0001),
+    metrics={'roll': 'mae', 'pitch': 'mae', 'yaw': 'mae'}
+)
+
+
+
 set_seed()
 # %%
 # # データセット
