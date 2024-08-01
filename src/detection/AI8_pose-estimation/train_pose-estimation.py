@@ -47,7 +47,7 @@ def set_seed(seed=42):
 
 def create_pose_estimation_model(base_model):
     x = base_model.output
-    x = GlobalAveragePooling2D()(x)
+    x = GlobalAveragePooling2D()(x)                       
     x = Dense(1024, activation='relu')(x)
     x = BatchNormalization()(x)
     x = Dense(512, activation='relu')(x)
