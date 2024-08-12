@@ -39,6 +39,10 @@ import random
 from keras.models import load_model
 import keras.backend as K
 
+# matplotlib settings
+MAP_COLOR = "viridis"
+
+
 def set_seed(seed=42):
     tf.random.set_seed(seed)
     np.random.seed(seed)
@@ -319,9 +323,9 @@ for i, (img, label) in enumerate(zip(tqdm(os.listdir(test_img_dir)), os.listdir(
     # cv2.imwrite(os.path.join(test_dir, "result.png"), pred)
     plt.subplot(1, 3, 1)
     # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)　# これを入れると色がおかしくなる？？
-    plt.imshow(img[0], cmap="gray")
+    plt.imshow(img[0], cmap=MAP_COLOR)
     plt.subplot(1, 3, 2)
-    plt.imshow(label, cmap="gray")
+    plt.imshow(label, cmap=MAP_COLOR)
     plt.subplot(1, 3, 3)
     plt.imshow(pred, vmin=0, vmax=1)
     # plt.show()
