@@ -29,16 +29,19 @@ $blendFilePath = "C:\workspace\MasterResearch\blender\new_earth_ver1.10_scriptin
 $pythonScriptPath = "C:\workspace\Github\master-research\blender\make_dataset_withPowerShell_ver4.py"
 
 # 16回繰り返す
-for ($i = 1; $i -le 5; $i++) {
+for ($i = 1; $i -le 100; $i++) {
     Write-Host "実行回数: $i"
     try {
         & "$blenderPath" "$blendFilePath" --python "$pythonScriptPath"
     } catch {
         Write-Host "エラーが発生しました: $_"
+    } finally {
+        # 必要であればBlenderのプロセスを強制終了
+        Stop-Process -Name "blender" -Force
     }
 }
 
 Write-Host "すべての実行が完了しました。"
 
 # To run this script, run the following command in the terminal
-# PowerShell.exe -ExecutionPolicy Bypass -File ".\make_dataset_withBlender.ps1"
+# PowerShell.exe -ExecutionPolicy Bypass -File ".\make_dataset_latest.ps1"

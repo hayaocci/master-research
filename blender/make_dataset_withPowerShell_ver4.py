@@ -13,7 +13,7 @@ import time
 # Constants
 IMG_SIZE = (512, 512)
 LABEL_IMG_SIZE = (512, 512)
-NUM_PIC = 10 # 100~ && x100
+NUM_PIC = 10000 # 100~ && x100
 SPLIT_RATIO = 0.8
 # TRAIN_PIC = int(NUM_PIC * SPLIT_RATIO)
 # TRAIN_PIC = 8000
@@ -29,7 +29,7 @@ else:
 RANDOM_SETTING = False # True: randomize camera location, False: fixed camera location
 
 # directory name manual
-dir_name = "20240812_0_" + str(IMG_SIZE[0]) + "x" + str(IMG_SIZE[1])
+dir_name = "20240812_2_" + str(IMG_SIZE[0]) + "x" + str(IMG_SIZE[1])
 
 # path
 # SAVE_DIR = 'C:/workspace/senior_thesis/nnc001/dataset/'
@@ -375,8 +375,8 @@ def render_main():
             if file_count+i == TRAIN_PIC:
                 isTrainCompleted = True
                 break
-        bpy.ops.wm.read_factory_settings(use_empty=True)
-        bpy.ops.wm.open_mainfile(filepath=BLENDER_FILEPATH)
+        # bpy.ops.wm.read_factory_settings(use_empty=True)
+        # bpy.ops.wm.open_mainfile(filepath=BLENDER_FILEPATH)
 
     if isTrainCompleted == True:
         if get_file_num(VALID_OUTPUT_DIR) == VALID_PIC:
@@ -400,8 +400,8 @@ def render_main():
 
                 if file_count+i == VALID_PIC:
                     break
-            bpy.ops.wm.read_factory_settings(use_empty=True)
-            bpy.ops.wm.open_mainfile(filepath=BLENDER_FILEPATH)
+            # bpy.ops.wm.read_factory_settings(use_empty=True)
+            # bpy.ops.wm.open_mainfile(filepath=BLENDER_FILEPATH)
             
     print("Rendering Completed")
 
@@ -452,6 +452,9 @@ def random_parameter():
 def set_all_object():
     # sun light settings
     # bpy.data.objects['Sun'].rotation_euler[2] = random.uniform(-3.64774, 0.506145)
+    # bpy.data.objects['Sun'].rotation_euler[2] = random.uniform(-6.1283, 0.436332)
+    # bpy.data.objects['Sun'].rotation_euler[2] = random.uniform(-3.00197, 0.226893)
+    bpy.data.objects['Sun'].rotation_euler[2] = random.uniform(-2.98451, -0.261799)
 
     # earth settings
     random_earth = random.uniform(0, 6.26573)
@@ -487,3 +490,4 @@ if __name__ == "__main__":
     elapsed_time = time.time() - start_time
     print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
     bpy.ops.wm.quit_blender()
+    # bpy.ops.wm.quit_blender({'CANCELLED'})
