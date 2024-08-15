@@ -151,7 +151,7 @@ intermediate_layer_model = keras.Model(inputs=complessed_mobilenet.input,
 x = keras.layers.GlobalAveragePooling2D()(intermediate_layer_model.output)
 
 # 全結合層を追加して (x, y) 座標を出力
-output = keras.layers.Dense(2, activation='linear')(x)  # 2つのニューロンで (x, y) 座標を出力
+output = keras.layers.Dense(2, activation='sigmoid')(x)  # 2つのニューロンで (x, y) 座標を出力
 
 # 新しいモデルを構築
 model_with_coordinates = keras.Model(inputs=intermediate_layer_model.input, outputs=output)
@@ -169,9 +169,35 @@ print('=====================================Model is defined====================
 """
 学習を行う
 """
+BATCH_SIZE = 32
+EPOCHS = 50
+LEARNING_RATE = 0.0005
+model_with_coordinates.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss='mean_squared_error')
+
+model_with_coordinates.fit(
+    train_image, # 画像データ
+    train_list, # ラベルデータ
+    batch_size=BATCH_SIZE,
+    epochs=EPOCHS,
+    validation_data=(valid_image, valid_list),
+    callbacks=[
+        ModelCheckpoint(
+            filepath='trained_custom_model/trained_coordinates_best_model_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
+            save_best_only=True,
+            monitor='val_loss',
+            mode='min'
+        ),
+        CSVLogger('log/coordinates_model_{}_{}_{}.csv'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE))
+    ],
+)
+
+# モデルの学習が終わった後に呼び出す
+tf.keras.backend.clear_session()
+
 # BATCH_SIZE = 32
 # EPOCHS = 100
-# LEARNING_RATE = 0.001
+# LEARNING_RATE = 0.002
+
 # model_with_coordinates.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss='mean_squared_error')
 
 # model_with_coordinates.fit(
@@ -182,166 +208,140 @@ print('=====================================Model is defined====================
 #     validation_data=(valid_image, valid_list),
 #     callbacks=[
 #         ModelCheckpoint(
-#             filepath='trained_custom_model/trained_coordinates_best_model_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
+#             filepath='trained_custom_model/trained_coordinates_best_model_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
 #             save_best_only=True,
 #             monitor='val_loss',
 #             mode='min'
 #         ),
-#         CSVLogger('log/coordinates_model_{}_{}.csv'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE))
+#         CSVLogger('log/coordinates_model_{}_{}_{}.csv'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE))
 #     ],
 # )
 
 # # モデルの学習が終わった後に呼び出す
 # tf.keras.backend.clear_session()
 
-BATCH_SIZE = 32
-EPOCHS = 100
-LEARNING_RATE = 0.002
+# BATCH_SIZE = 32
+# EPOCHS = 100
+# LEARNING_RATE = 0.003
 
-model_with_coordinates.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss='mean_squared_error')
+# model_with_coordinates.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss='mean_squared_error')
 
-model_with_coordinates.fit(
-    train_image, # 画像データ
-    train_list, # ラベルデータ
-    batch_size=BATCH_SIZE,
-    epochs=EPOCHS,
-    validation_data=(valid_image, valid_list),
-    callbacks=[
-        ModelCheckpoint(
-            filepath='trained_custom_model/trained_coordinates_best_model_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
-            save_best_only=True,
-            monitor='val_loss',
-            mode='min'
-        ),
-        CSVLogger('log/coordinates_model_{}_{}_{}.csv'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE))
-    ],
-)
+# model_with_coordinates.fit(
+#     train_image, # 画像データ
+#     train_list, # ラベルデータ
+#     batch_size=BATCH_SIZE,
+#     epochs=EPOCHS,
+#     validation_data=(valid_image, valid_list),
+#     callbacks=[
+#         ModelCheckpoint(
+#             filepath='trained_custom_model/trained_coordinates_best_model_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
+#             save_best_only=True,
+#             monitor='val_loss',
+#             mode='min'
+#         ),
+#         CSVLogger('log/coordinates_model_{}_{}_{}.csv'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE))
+#     ],
+# )
 
-# モデルの学習が終わった後に呼び出す
-tf.keras.backend.clear_session()
+# # モデルの学習が終わった後に呼び出す
+# tf.keras.backend.clear_session()
 
-BATCH_SIZE = 32
-EPOCHS = 100
-LEARNING_RATE = 0.003
+# BATCH_SIZE = 32
+# EPOCHS = 100
+# LEARNING_RATE = 0.004
 
-model_with_coordinates.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss='mean_squared_error')
+# model_with_coordinates.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss='mean_squared_error')
 
-model_with_coordinates.fit(
-    train_image, # 画像データ
-    train_list, # ラベルデータ
-    batch_size=BATCH_SIZE,
-    epochs=EPOCHS,
-    validation_data=(valid_image, valid_list),
-    callbacks=[
-        ModelCheckpoint(
-            filepath='trained_custom_model/trained_coordinates_best_model_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
-            save_best_only=True,
-            monitor='val_loss',
-            mode='min'
-        ),
-        CSVLogger('log/coordinates_model_{}_{}_{}.csv'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE))
-    ],
-)
+# model_with_coordinates.fit(
+#     train_image, # 画像データ
+#     train_list, # ラベルデータ
+#     batch_size=BATCH_SIZE,
+#     epochs=EPOCHS,
+#     validation_data=(valid_image, valid_list),
+#     callbacks=[
+#         ModelCheckpoint(
+#             filepath='trained_custom_model/trained_coordinates_best_model_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
+#             save_best_only=True,
+#             monitor='val_loss',
+#             mode='min'
+#         ),
+#         CSVLogger('log/coordinates_model_{}_{}_{}.csv'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE))
+#     ],
+# )
 
-# モデルの学習が終わった後に呼び出す
-tf.keras.backend.clear_session()
+# # モデルの学習が終わった後に呼び出す
+# tf.keras.backend.clear_session()
 
-BATCH_SIZE = 32
-EPOCHS = 100
-LEARNING_RATE = 0.004
+# BATCH_SIZE = 32
+# EPOCHS = 100
+# LEARNING_RATE = 0.005
+# model_with_coordinates.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss='mean_squared_error')
 
-model_with_coordinates.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss='mean_squared_error')
+# model_with_coordinates.fit(
+#     train_image, # 画像データ
+#     train_list, # ラベルデータ
+#     batch_size=BATCH_SIZE,
+#     epochs=EPOCHS,
+#     validation_data=(valid_image, valid_list),
+#     callbacks=[
+#         ModelCheckpoint(
+#             filepath='trained_custom_model/trained_coordinates_best_model_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
+#             save_best_only=True,
+#             monitor='val_loss',
+#             mode='min'
+#         ),
+#         CSVLogger('log/coordinates_model_{}_{}_{}.csv'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE))
+#     ],
+# )
+# # モデルの学習が終わった後に呼び出す
+# tf.keras.backend.clear_session()
 
-model_with_coordinates.fit(
-    train_image, # 画像データ
-    train_list, # ラベルデータ
-    batch_size=BATCH_SIZE,
-    epochs=EPOCHS,
-    validation_data=(valid_image, valid_list),
-    callbacks=[
-        ModelCheckpoint(
-            filepath='trained_custom_model/trained_coordinates_best_model_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
-            save_best_only=True,
-            monitor='val_loss',
-            mode='min'
-        ),
-        CSVLogger('log/coordinates_model_{}_{}_{}.csv'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE))
-    ],
-)
+# BATCH_SIZE = 32
+# EPOCHS = 100
+# LEARNING_RATE = 0.008
+# model_with_coordinates.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss='mean_squared_error')
 
-# モデルの学習が終わった後に呼び出す
-tf.keras.backend.clear_session()
+# model_with_coordinates.fit(
+#     train_image, # 画像データ
+#     train_list, # ラベルデータ
+#     batch_size=BATCH_SIZE,
+#     epochs=EPOCHS,
+#     validation_data=(valid_image, valid_list),
+#     callbacks=[
+#         ModelCheckpoint(
+#             filepath='trained_custom_model/trained_coordinates_best_model_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
+#             save_best_only=True,
+#             monitor='val_loss',
+#             mode='min'
+#         ),
+#         CSVLogger('log/coordinates_model_{}_{}_{}.csv'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE))
+#     ],
+# )
 
-BATCH_SIZE = 32
-EPOCHS = 100
-LEARNING_RATE = 0.005
-model_with_coordinates.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss='mean_squared_error')
+# # モデルの学習が終わった後に呼び出す
+# tf.keras.backend.clear_session()
 
-model_with_coordinates.fit(
-    train_image, # 画像データ
-    train_list, # ラベルデータ
-    batch_size=BATCH_SIZE,
-    epochs=EPOCHS,
-    validation_data=(valid_image, valid_list),
-    callbacks=[
-        ModelCheckpoint(
-            filepath='trained_custom_model/trained_coordinates_best_model_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
-            save_best_only=True,
-            monitor='val_loss',
-            mode='min'
-        ),
-        CSVLogger('log/coordinates_model_{}_{}_{}.csv'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE))
-    ],
-)
-# モデルの学習が終わった後に呼び出す
-tf.keras.backend.clear_session()
+# BATCH_SIZE = 32
+# EPOCHS = 100
+# LEARNING_RATE = 0.01
+# model_with_coordinates.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss='mean_squared_error')
 
-BATCH_SIZE = 32
-EPOCHS = 100
-LEARNING_RATE = 0.008
-model_with_coordinates.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss='mean_squared_error')
-
-model_with_coordinates.fit(
-    train_image, # 画像データ
-    train_list, # ラベルデータ
-    batch_size=BATCH_SIZE,
-    epochs=EPOCHS,
-    validation_data=(valid_image, valid_list),
-    callbacks=[
-        ModelCheckpoint(
-            filepath='trained_custom_model/trained_coordinates_best_model_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
-            save_best_only=True,
-            monitor='val_loss',
-            mode='min'
-        ),
-        CSVLogger('log/coordinates_model_{}_{}_{}.csv'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE))
-    ],
-)
-
-# モデルの学習が終わった後に呼び出す
-tf.keras.backend.clear_session()
-
-BATCH_SIZE = 32
-EPOCHS = 100
-LEARNING_RATE = 0.01
-model_with_coordinates.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss='mean_squared_error')
-
-model_with_coordinates.fit(
-    train_image, # 画像データ
-    train_list, # ラベルデータ
-    batch_size=BATCH_SIZE,
-    epochs=EPOCHS,
-    validation_data=(valid_image, valid_list),
-    callbacks=[
-        ModelCheckpoint(
-            filepath='trained_custom_model/trained_coordinates_best_model_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
-            save_best_only=True,
-            monitor='val_loss',
-            mode='min'
-        ),
-        CSVLogger('log/coordinates_model_{}_{}_{}.csv'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE))
-    ],
-)
+# model_with_coordinates.fit(
+#     train_image, # 画像データ
+#     train_list, # ラベルデータ
+#     batch_size=BATCH_SIZE,
+#     epochs=EPOCHS,
+#     validation_data=(valid_image, valid_list),
+#     callbacks=[
+#         ModelCheckpoint(
+#             filepath='trained_custom_model/trained_coordinates_best_model_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
+#             save_best_only=True,
+#             monitor='val_loss',
+#             mode='min'
+#         ),
+#         CSVLogger('log/coordinates_model_{}_{}_{}.csv'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE))
+#     ],
+# )
 
 # %%
 model_with_coordinates.save('trained_custom_model/trained_coordinates_model_last.h5')
