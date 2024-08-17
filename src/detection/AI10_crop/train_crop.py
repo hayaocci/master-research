@@ -60,28 +60,54 @@ val_csv_path = os.path.join(dataset_dir, 'valid.csv')
 print('train image making...')
 train_image = []
 
-for image in tqdm(os.listdir(train_image_dir)):
-    image_path = os.path.join(train_image_dir, image)
-    img = cv2.imread(image_path)
-    img = cv2.resize(img, (224, 224))
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    # img = img / 255.0
-    train_image.append(img)
+train_sample_img = cv2.imread(os.path.join(train_image_dir, '0.png'))
+img_size = train_sample_img.shape[:2]
+if img_size[0] != 224 or img_size[1] != 224:
+    print('Error: image size is not 224x224')
+
+    for image in tqdm(os.listdir(train_image_dir)):
+        image_path = os.path.join(train_image_dir, image)
+        img = cv2.imread(image_path)
+        img = cv2.resize(img, (224, 224))
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        train_image.append(img)
+else:
+    for image in tqdm(os.listdir(train_image_dir)):
+        image_path = os.path.join(train_image_dir, image)
+        img = cv2.imread(image_path)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        train_image.append(img)
 
 train_image = np.array(train_image) / 255.0
 
 print('valid image making...')
 valid_image = []
 
-for image in tqdm(os.listdir(val_image_dir)):
-    image_path = os.path.join(val_image_dir, image)
-    img = cv2.imread(image_path)
-    img = cv2.resize(img, (224, 224))
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    # img = img / 255.0
-    valid_image.append(img)
+val_sample_img = cv2.imread(os.path.join(val_image_dir, '0.png'))
+img_size = val_sample_img.shape[:2]
+if img_size[0] != 224 or img_size[1] != 224:
+    print('Error: image size is not 224x224')
+
+    for image in tqdm(os.listdir(val_image_dir)):
+        image_path = os.path.join(val_image_dir, image)
+        img = cv2.imread(image_path)
+        img = cv2.resize(img, (224, 224))
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # img = img / 255.0
+        # valid_image = valid_image / 255.0
+        valid_image.append(img)
+else:
+    for image in tqdm(os.listdir(val_image_dir)):
+        image_path = os.path.join(val_image_dir, image)
+        img = cv2.imread(image_path)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # img = img / 255.0
+        # valid_image = np.array(valid_image) / 255.0
+        # valid_image = valid_image / 255.0
+        valid_image.append(img)
 
 valid_image = np.array(valid_image) / 255.0
+
 
 # %%
 # データセットCSVの読み込み
