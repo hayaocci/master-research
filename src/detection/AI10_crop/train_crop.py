@@ -158,7 +158,7 @@ if len(val_gy_list) != utils.get_file_num(val_image_dir):
     print('Error: label array and image number are not matched')
     exit()
 
-valid_list = np.array(valid_list) /255.0
+valid_list = np.array(valid_list)
 
 print('=====================================Label array and image number are matched=====================================')
 
