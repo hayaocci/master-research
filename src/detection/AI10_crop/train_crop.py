@@ -179,7 +179,7 @@ intermediate_layer_model = keras.Model(inputs=complessed_mobilenet.input,
 x = keras.layers.GlobalAveragePooling2D()(intermediate_layer_model.output)
 
 # 全結合層を追加して (x, y) 座標を出力
-output = keras.layers.Dense(2, activation='sigmoid')(x)  # 2つのニューロンで (x, y) 座標を出力
+output = keras.layers.Dense(2, activation='linear')(x)  # 2つのニューロンで (x, y) 座標を出力
 
 # 新しいモデルを構築
 model_with_coordinates = keras.Model(inputs=intermediate_layer_model.input, outputs=output)
@@ -235,7 +235,7 @@ LEARNING_RATE = 0.0005
 model_with_coordinates.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss=loss)
 
 # CSVLoggerを使用してログを保存する
-log_filename = 'log/coordinates_model_log.csv'
+log_filename = 'log/coordinates_model_log_linear.csv'
 
 with open(log_filename, 'w', encoding='utf-8', newline='') as csvfile:
     csv_logger = CSVLogger(log_filename)
@@ -249,7 +249,7 @@ with open(log_filename, 'w', encoding='utf-8', newline='') as csvfile:
         validation_data=(valid_image, valid_list),
         callbacks=[
             ModelCheckpoint(
-                filepath='trained_custom_model/trained_coordinates_best_model_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
+                filepath='trained_custom_model/trained_coordinates_best_model_linear_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE),
                 save_best_only=True,
                 monitor='val_loss',
                 mode='min'
