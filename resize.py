@@ -42,8 +42,24 @@ def main():
     dataset_resized_valid_input = os.path.join(dataset_resized_valid_dir, 'input')
     dataset_resized_valid_output = os.path.join(dataset_resized_valid_dir, 'output')
 
+    # ディレクトリの作成
+    if not os.path.exists(dataset_resized_dir):
+        os.makedirs(dataset_resized_dir)
+    if not os.path.exists(dataset_resized_train_dir):
+        os.makedirs(dataset_resized_train_dir)
+    if not os.path.exists(dataset_resized_valid_dir):
+        os.makedirs(dataset_resized_valid_dir)
+    if not os.path.exists(dataset_resized_train_input):
+        os.makedirs(dataset_resized_train_input)
+    if not os.path.exists(dataset_resized_train_output):
+        os.makedirs(dataset_resized_train_output)
+    if not os.path.exists(dataset_resized_valid_input):
+        os.makedirs(dataset_resized_valid_input)
+    if not os.path.exists(dataset_resized_valid_output):
+        os.makedirs(dataset_resized_valid_output)
+
     # 画像のリサイズ
-    size = (224, 224)
+    size = (96, 96)
 
    # Trainデータのリサイズ
     file_count = get_file_num(dataset_train_input)

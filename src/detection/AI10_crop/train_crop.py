@@ -42,7 +42,7 @@ import module.utils as utils
 # DATASET_MAIN_DIR = 'C:/workspace/MasterResearch/blender_dataset'
 REPOSITORY_DIR = 'C:/workspace/Github/master-research'
 DATASET_MAIN_DIR = os.path.join(REPOSITORY_DIR, 'dataset')
-dataset_dir = os.path.join(DATASET_MAIN_DIR, '001') # 場合によって書き換える
+dataset_dir = os.path.join(DATASET_MAIN_DIR, '002') # 場合によって書き換える
 
 """
 以下編集不要
@@ -228,7 +228,7 @@ loss = keras.losses.MeanSquaredError()
 
 # ハイパーパラメータ
 BATCH_SIZE = 32
-EPOCHS = 50
+EPOCHS = 200
 LEARNING_RATE = 0.0005
 
 # モデルのコンパイル
