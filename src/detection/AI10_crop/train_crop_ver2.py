@@ -190,6 +190,7 @@ print('=====================================Label array and image number are mat
 # total_params = model_with_coordinates.count_params()
 # print(f'Total params: {total_params}')
 
+"""
 # ベースモデルの読み込み
 complessed_mobilenet = tf.keras.models.load_model('model/base_model.h5')
 layer_name = 'block_6_expand_relu'  # 利用したい層の名前
@@ -209,6 +210,54 @@ model_with_coordinates = Model(inputs=intermediate_layer_model.input, outputs=ou
 
 # モデルのコンパイル
 model_with_coordinates.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+
+# 新しいモデルのサマリーを表示
+model_with_coordinates.summary()
+total_params = model_with_coordinates.count_params()
+print(f'Total params: {total_params}')
+"""
+
+# 入力サイズの定義
+input_shape = (224, 224, 3)  # 例として224x224ピクセルの画像を使用
+
+# モデルの作成
+def create_model(input_shape):
+    # モバイルネットV2のベースモデルを読み込み
+    base_model = MobileNetV2(weights='imagenet', include_top=False, input_shape=input_shape)
+    
+    # ベースモデルのパラメータを凍結
+    base_model.trainable = False
+
+    # 入力層
+    inputs = Input(shape=input_shape)
+
+    # ベースモデルに入力を渡す
+    x = base_model(inputs, training=False)
+    
+    # グローバル平均プーリング
+    x = GlobalAveragePooling2D()(x)
+    
+    # 全結合層
+    x = Dense(1024, activation='relu')(x)
+    x = Dense(512, activation='relu')(x)
+    
+    # 出力層: 2つのノードでxy座標を予測
+    outputs = Dense(2, activation='sigmoid')(x)
+
+    # モデルの作成
+    model = Model(inputs, outputs)
+    
+    return model
+
+# モデルのインスタンス化
+model_with_coordinates = create_model(input_shape)
+
+model_with_coordinates.summary()
+total_params = model_with_coordinates.count_params()
+print(f'Total params: {total_params}')
+
+# モデルのコンパイル
+model_with_coordinates.compile(optimizer=Adam(learning_rate=1e-4), loss='mean_squared_error')
 
 # 新しいモデルのサマリーを表示
 model_with_coordinates.summary()
