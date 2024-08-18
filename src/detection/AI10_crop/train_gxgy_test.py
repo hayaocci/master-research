@@ -42,7 +42,7 @@ import module.utils as utils
 # DATASET_MAIN_DIR = 'C:/workspace/MasterResearch/blender_dataset'
 REPOSITORY_DIR = 'C:/workspace/Github/master-research'
 DATASET_MAIN_DIR = os.path.join(REPOSITORY_DIR, 'dataset')
-dataset_dir = os.path.join(DATASET_MAIN_DIR, '001') # 場合によって書き換える
+dataset_dir = os.path.join(DATASET_MAIN_DIR, '002') # 場合によって書き換える
 
 """
 以下編集不要
@@ -57,7 +57,7 @@ val_dir = os.path.join(dataset_dir, 'valid')
 val_image_dir = os.path.join(val_dir, 'input')
 val_csv_path = os.path.join(dataset_dir, 'valid.csv')
 
-print('train image making...')
+# print('train image making...')
 # train_image = []
 
 # for image in tqdm(os.listdir(train_image_dir)):
@@ -140,7 +140,7 @@ print('=====================================Label array and image number are mat
 """
 
 # モデルの読み込み
-train_model = keras.models.load_model(REPOSITORY_DIR + '/src/detection/AI10_crop/trained_custom_model/trained_coordinates_best_model_32_100.h5')
+train_model = keras.models.load_model(REPOSITORY_DIR + '/src/detection/AI10_crop/trained_custom_model/trained_coordinates_best_model_linear_32_200_0.0005.h5')
 
 # モデルのサマリー
 train_model.summary()
@@ -150,7 +150,9 @@ predictions = train_model.predict(valid_image)
 
 predictions = predictions * 512.0
 
-output_csv_path = os.path.join('validation_predictions_32_50_0.0005.csv')
+# output_csv_path = os.path.join('validation_predictions_32_50_0.0005.csv')
+output_csv_path = os.path.join('validation_predictions_linear_{}_{}_{}.csv'.format(32, 200, 0.0005))
+
 
 with open(output_csv_path, mode='w', newline='') as file:
     writer = csv.writer(file)
