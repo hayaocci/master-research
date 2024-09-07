@@ -9,6 +9,7 @@ from module.const import *
 from module import func, loss
 
 custom_model_path = "master_model/trained_model.h5" # tensorflowのモデル
+# custom_model_path = "master_model/new_best_model_100_32_0.0005.h5" # tensorflowのモデル
 # model = tf.lite.Interpreter(model_path=TFLITE_MODEL_PATH)
 model = tf.keras.models.load_model(
     custom_model_path, custom_objects={"DiceLoss": loss.DiceLoss}, compile=False

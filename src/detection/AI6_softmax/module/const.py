@@ -8,6 +8,7 @@ ALPHA = 0.75  # 1はダメ0.5は行ける
 SPLIT_NUM = 1
 
 RAW_DATA_DIR = "rawdata"  # 生データ
+# RAW_DATA_DIR = 'C:'
 DATA_DIR = "master_data"  # データセット。生データを変換したもの
 
 # 保存するモデルのパス

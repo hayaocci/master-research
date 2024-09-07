@@ -89,20 +89,20 @@ if __name__ == "__main__":
         shutil.rmtree(DATA_DIR)
     os.makedirs(DATA_DIR)
 
-    # train_dir = "rawdata/train"
-    train_dir = "20240624_dataset/train"
+    # train_dir = "20240624_dataset/train"
+    train_dir = 'C:/workspace/Github/master-research/dataset/003/train'
 
     img_train_pathes = os.listdir(os.path.join(train_dir, "input"))
     # label_train_pathes = os.listdir(os.path.join(train_dir, "labels"))
-    label_train_pathes = os.listdir(os.path.join(train_dir, "bin_label"))
-
+    # label_train_pathes = os.listdir(os.path.join(train_dir, "bin_label"))
+    label_train_pathes = os.listdir(os.path.join(train_dir, "seg_label"))
 
     count = 0
     kind = set()
     for img_path, label_path in zip(tqdm(img_train_pathes), label_train_pathes):
         img_path = os.path.join(train_dir, "input", img_path)
         # label_path = os.path.join(train_dir, "labels", label_path)
-        label_path = os.path.join(train_dir, "bin_label", label_path)
+        label_path = os.path.join(train_dir, "seg_label", label_path)
 
         img = cv2.imread(img_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)

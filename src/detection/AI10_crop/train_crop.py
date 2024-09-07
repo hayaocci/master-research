@@ -228,14 +228,15 @@ loss = keras.losses.MeanSquaredError()
 
 # ハイパーパラメータ
 BATCH_SIZE = 32
-EPOCHS = 200
+EPOCHS = 500
 LEARNING_RATE = 0.0005
 
 # モデルのコンパイル
 model_with_coordinates.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss=loss)
 
 # CSVLoggerを使用してログを保存する
-log_filename = 'log/coordinates_model_log_linear.csv'
+# log_filename = 'log/coordinates_model_log_linear.csv'
+log_filename = 'log/coordinates_model_log_linear_{}_{}_{}.csv'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE)
 
 with open(log_filename, 'w', encoding='utf-8', newline='') as csvfile:
     csv_logger = CSVLogger(log_filename)
@@ -412,7 +413,8 @@ tf.keras.backend.clear_session()
 # )
 
 # %%
-model_with_coordinates.save('trained_custom_model/trained_coordinates_model_last.h5')
+# model_with_coordinates.save('trained_custom_model/trained_coordinates_model_last.h5')
+model_with_coordinates.save('trained_custom_model/trained_coordinates_model_last_linear_{}_{}_{}.h5'.format(BATCH_SIZE, EPOCHS, LEARNING_RATE))
 
 
 
